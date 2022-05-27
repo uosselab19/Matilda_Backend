@@ -19,11 +19,10 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import uos.selab.domains.Contract;
 import uos.selab.domains.Item;
-import uos.selab.domains.Item.ItemBuilder;
 import uos.selab.domains.Member;
-import uos.selab.domains.Member.MemberBuilder;
 import uos.selab.dtos.InsertContractDTO;
 import uos.selab.dtos.PrintContractDTO;
+import uos.selab.dtos.SelectContractDTO;
 import uos.selab.exceptions.ResourceNotFoundException;
 import uos.selab.mappers.ContractMapper;
 import uos.selab.repositories.ContractRepository;
@@ -61,6 +60,7 @@ public class ContractController {
 	}
 
 	@GetMapping("/{num}")
+	@ApiOperation(value = "contract_num으로 Contract 정보 조회", protocols = "http")
 	public ResponseEntity<PrintContractDTO> findById(@PathVariable("num") Integer contract_num) {
 		Contract contract = contractRepo.findById(contract_num)
 				.orElseThrow(() -> new ResourceNotFoundException("Not found Contract with id = " + contract_num));
@@ -72,8 +72,44 @@ public class ContractController {
 		
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
+	
+	@PostMapping("/select")
+	@ApiOperation(value = "SelectContractDTO로 Contract 목록 조회", protocols = "http")
+	public ResponseEntity<List<PrintContractDTO>> findAll(@RequestBody SelectContractDTO contractDTO) {
+		List<Contract> contracts = null;
+		
+		switch(contractDTO.getKeywordType()) {
+			case SELLER:
+				contracts = contractRepo.findALLBySeller(memberRepo.getById(contractDTO.getSellerNum()));
+				break;
+			case BUYER:
+				contracts = contractRepo.findALLByBuyer(memberRepo.getById(contractDTO.getBuyerNum()));
+				break;
+			case SELLER_OR_BUYER:
+				contracts = contractRepo.findALLBySellerOrBuyer(memberRepo.getById(contractDTO.getSellerNum()),memberRepo.getById(contractDTO.getBuyerNum()));
+				break;
+			case ITEM:
+				contracts = contractRepo.findALLByItem(itemRepo.getById(contractDTO.getItemNum()));
+				break;
+		}
+		
+		if (contracts.isEmpty()) {
+			throw new ResourceNotFoundException("Not found Contracts");
+		}
+		
+		List<PrintContractDTO> list = new ArrayList<PrintContractDTO>( contracts.size() );
+        for ( Contract contract : contracts ) {
+            list.add( PrintContractDTO.builder().itemTitle(contract.getItem().getTitle())
+            		.sellerNickName(contract.getSeller() ==null ? "none" : contract.getSeller().getNickname())
+            		.buyerNickName(contract.getBuyer().getNickname())
+            		.stateCode(contract.getStateCode()).price(contract.getPrice()).build());
+        }
+		
+		return new ResponseEntity<>(list, HttpStatus.OK);
+	}
 
 	@PostMapping()
+	@ApiOperation(value = "Contract 등록", protocols = "http")
 	public ResponseEntity<HashMap<String, String>> insert(@RequestBody InsertContractDTO contractDTO) {
 		//InsertContractDTO에서 받아온 JSON에서 데이터 추출
 		

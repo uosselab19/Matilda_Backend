@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uos.selab.enums.SortOrder;
+import uos.selab.enums.ContractKeywordType;
 
 @AllArgsConstructor()
 @NoArgsConstructor()
@@ -14,22 +14,16 @@ import uos.selab.enums.SortOrder;
 @Builder
 public class SelectContractDTO {	
 	
-	private int memberNum; // 정렬대상 1
+	private int sellerNum; // 검색 값 1
 	
-	private String stateCode; // 정렬대상 2
-
-	private SortOrder sortOrder; // 정렬순서
+	private int buyerNum; // 검색 값 2
 	
-	private String sortKey; // 정렬조건
+	private int itemNum; // 검색 값 3
+	
+	private ContractKeywordType keywordType;
 	
 	private int skip; // paging skip
 	
-	private int take; // paging take
+	private int take; // paging take 15
 	
-}
-
-enum ContractSortKey {
-	SELLER,
-	BUYER,
-	ITEM
 }
