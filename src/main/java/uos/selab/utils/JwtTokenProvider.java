@@ -16,11 +16,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.RequiredArgsConstructor;
 import uos.selab.domains.CustomUserDetails;
 import uos.selab.domains.Member;
 
-@RequiredArgsConstructor
+// @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
 
@@ -32,7 +31,7 @@ public class JwtTokenProvider {
     // private final UserDetailsService userDetailsService;
 
     // 객체 초기화, secretKey를 Base64로 인코딩한다.
-    @PostConstruct
+    @PostConstruct	
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }

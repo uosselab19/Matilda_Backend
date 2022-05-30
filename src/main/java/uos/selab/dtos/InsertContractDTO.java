@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uos.selab.domains.Item;
-import uos.selab.domains.Member;
 
 @AllArgsConstructor()
 @NoArgsConstructor()
