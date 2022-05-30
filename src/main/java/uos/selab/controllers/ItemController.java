@@ -23,6 +23,7 @@ import uos.selab.domains.Item.ItemBuilder;
 import uos.selab.dtos.InsertItemDTO;
 import uos.selab.dtos.PrintItemDTO;
 import uos.selab.dtos.PrintItemDTO.PrintItemDTOBuilder;
+import uos.selab.dtos.SelectItemDTO;
 import uos.selab.dtos.UpdateItemDTO;
 import uos.selab.exceptions.ResourceNotFoundException;
 import uos.selab.mappers.ItemMapper;
@@ -41,9 +42,9 @@ public class ItemController {
 
 	@GetMapping()
 	@ResponseStatus(value = HttpStatus.OK)
-	@ApiOperation(value = "전체 Item 리스트 조회", protocols = "http")
-	public List<Item> findAll() {
-		List<Item> items = itemRepo.findAll();
+	@ApiOperation(value = "Item 리스트 검색", protocols = "http")
+	public List<Item> findAll(@RequestBody SelectItemDTO itemDTO) {
+		List<Item> items = itemRepo.findAllByDTO(itemDTO);
 		
 		if (items.isEmpty()) {
 			throw new ResourceNotFoundException("Not found Items");
@@ -97,6 +98,15 @@ public class ItemController {
 		return new ResponseEntity<>(items, HttpStatus.OK);
 	}
 
+	/* @GetMapping("/select/{num}")
+	@ApiOperation(value = "특정 Item 조회", protocols = "http")
+	public ResponseEntity<PrintItemDTO> findSelect(@PathVariable("num") Integer num) {
+		
+		
+			
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	} */
+	
 	@PostMapping()
 	@ApiOperation(value = "신규 Item 추가", protocols = "http")
 	public ResponseEntity<PrintItemDTO> insert(@RequestBody InsertItemDTO itemDTO) {
