@@ -17,13 +17,15 @@ public class PrintItemDTO {
 	
 	private int memberNum;
 	
+	private String memberNickName;
+	
 	private String catCode;
 	
 	private String title;
 	
 	private String objectUrl;
 	
-	private int contractNum;
-	
 	private String stateCode;
+	
+	private double price;
 }
