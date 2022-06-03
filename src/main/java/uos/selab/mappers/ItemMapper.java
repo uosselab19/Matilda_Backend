@@ -8,6 +8,7 @@ import org.mapstruct.factory.Mappers;
 
 import uos.selab.domains.Item;
 import uos.selab.dtos.InsertItemDTO;
+import uos.selab.dtos.PrintItemDTO;
 import uos.selab.dtos.UpdateItemDTO;
 
 @Mapper(componentModel = "spring")
@@ -18,6 +19,8 @@ public interface ItemMapper {
 	Item toEntity(InsertItemDTO itemDTO);
 
 	InsertItemDTO toDTO(Item item);
+	
+	PrintItemDTO toPrintDTO(Item item);
 
 	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 	void updateFromDto(UpdateItemDTO dto, @MappingTarget Item entity);
