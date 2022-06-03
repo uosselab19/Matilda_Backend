@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import uos.selab.enums.ItemSortKey;
 import uos.selab.enums.SortOrder;
 
 @AllArgsConstructor()
@@ -15,9 +16,9 @@ import uos.selab.enums.SortOrder;
 public class SelectItemDTO {	
 	private String title; // 키 값 1
 
-	private int minPrice; // 키 값 2
+	private double minPrice; // 키 값 2
 	
-	private int maxPrice; // 키 값 2-2
+	private double maxPrice; // 키 값 2-2
 	
 	private int memberNum; // 키 값 3
 	
@@ -33,11 +34,4 @@ public class SelectItemDTO {
 	
 	private int take; // paging take
 	
-}
-
-enum ItemSortKey {
-	TITLE,
-	PRICE,
-	TITLEPRICE0,	// title은 sortOrder, price는 asc
-	TITLEPRICE1		// title은 sortOrder, price는 desc
 }
