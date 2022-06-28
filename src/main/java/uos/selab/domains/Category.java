@@ -30,7 +30,7 @@ public class Category {
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name="cat_code", nullable=false, insertable=false, updatable=false)
 	private List<Item> items;
-	/* */
+	/*  */
 	
 	@Column(nullable = false)
 	private String title;
