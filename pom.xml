@@ -9,9 +9,10 @@
 	</parent>
 	<groupId>uos.selab</groupId>
 	<artifactId>demo</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-DEPLOY</version>
 	<name>Matilda_Backend</name>
 	<description>Demo project for Spring Boot</description>
+	<packaging>jar</packaging>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
