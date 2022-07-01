@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import uos.selab.domains.Item;
 import uos.selab.domains.Item.ItemBuilder;
 import uos.selab.dtos.InsertItemDTO;
+import uos.selab.dtos.PrintDetailItemDTO;
 import uos.selab.dtos.PrintItemDTO;
 import uos.selab.dtos.SelectItemDTO;
 import uos.selab.dtos.UpdateItemDTO;
@@ -55,11 +56,11 @@ public class ItemController {
 
 	@GetMapping("/{num}")
 	@ApiOperation(value = "특정 Item 조회", protocols = "http")
-	public ResponseEntity<PrintItemDTO> findOne(@PathVariable("num") Integer num) {
+	public ResponseEntity<PrintDetailItemDTO> findOne(@PathVariable("num") Integer num) {
 		Item item = itemRepo.findById(num)
 				.orElseThrow(() -> new ResourceNotFoundException("Not found Item with id = " + num));
 
-		return new ResponseEntity<>(toPrintDTO(item), HttpStatus.OK);
+		return new ResponseEntity<>(toPrintDetailDTO(item), HttpStatus.OK);
 	}
 
 	@GetMapping("/user/{num}")
@@ -96,7 +97,7 @@ public class ItemController {
 		ItemBuilder itemBuilder = Item.builder();
 		itemBuilder.member(memberRepo.getById(itemDTO.getMemberNum()))
 				.category(categoryRepo.getById(itemDTO.getCatCode())).title(now.toString())
-				.thumbImgUrl(itemDTO.getThumbImgUrl()).imgUrl(itemDTO.getImgUrl()).objectUrl(itemDTO.getObjectUrl())
+				.imgUrl(itemDTO.getImgUrl()).objectUrl(itemDTO.getObjectUrl())
 				.stateCode("CR");
 
 		// 생성한 아이템 저장
@@ -130,6 +131,7 @@ public class ItemController {
 
 		printItem.setMemberNum(item.getMember().getMemberNum());
 		printItem.setMemberNickName(item.getMember().getNickname());
+		printItem.setMemberThumbImgUrl(item.getMember().getThumbProfileImg());
 		printItem.setCatCode(item.getCategory().getCatCode());
 
 		return printItem;
@@ -142,5 +144,17 @@ public class ItemController {
 			printItems.add(toPrintDTO(item));
 		}
 		return printItems;
+	}
+	
+	// 단일 PrintDetailItemDTO 생성 함수
+	private PrintDetailItemDTO toPrintDetailDTO(Item item) {
+		PrintDetailItemDTO printItem = ItemMapper.INSTANCE.toPrintDetailDTO(item);
+
+		printItem.setMemberNum(item.getMember().getMemberNum());
+		printItem.setMemberNickName(item.getMember().getNickname());
+		printItem.setMemberThumbImgUrl(item.getMember().getThumbProfileImg());
+		printItem.setCatCode(item.getCategory().getCatCode());
+
+		return printItem;
 	}
 }
