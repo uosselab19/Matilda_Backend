@@ -5,7 +5,7 @@ target/
 !**/src/test/**/target/
 
 ### MySQL 접속 정보 ###
-/src/main/resources/application.properties
+/src/main/resources/application.properties*
 
 ### STS ###
 .apt_generated
