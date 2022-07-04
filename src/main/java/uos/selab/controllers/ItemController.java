@@ -2,6 +2,7 @@ package uos.selab.controllers;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,7 +26,6 @@ import uos.selab.domains.Item.ItemBuilder;
 import uos.selab.dtos.InsertItemDTO;
 import uos.selab.dtos.PrintDetailItemDTO;
 import uos.selab.dtos.PrintItemDTO;
-import uos.selab.dtos.SelectItemDTO;
 import uos.selab.dtos.UpdateItemDTO;
 import uos.selab.exceptions.ResourceNotFoundException;
 import uos.selab.mappers.ItemMapper;
@@ -44,7 +45,7 @@ public class ItemController {
 	@GetMapping()
 	@ResponseStatus(value = HttpStatus.OK)
 	@ApiOperation(value = "Item 리스트 검색", protocols = "http")
-	public ResponseEntity<List<PrintItemDTO>> findAll(@RequestBody SelectItemDTO itemDTO) {
+	public ResponseEntity<List<PrintItemDTO>> findAll(@RequestParam HashMap<String, String> itemDTO) {
 		List<Item> items = itemRepo.findAllByDTO(itemDTO);
 
 		if (items.isEmpty()) {
