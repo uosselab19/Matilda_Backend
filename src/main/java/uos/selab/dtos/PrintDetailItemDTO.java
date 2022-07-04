@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @Builder
-public class PrintItemDTO {
+public class PrintDetailItemDTO {
 
 	private int itemNum;
 	
@@ -25,9 +25,11 @@ public class PrintItemDTO {
 	
 	private String title;
 	
-	private String objectUrl;
-	
+	private String description;
+		
 	private String imgUrl;
+	
+	private String nftAddress;
 	
 	private String stateCode;
 	

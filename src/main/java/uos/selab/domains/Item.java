@@ -55,9 +55,6 @@ public class Item {
 	@Column(nullable = true, length = 300)
 	private String description;
 	
-	@Column(name = "thumb_img_url", nullable = true, length = 255)
-	private String thumbImgUrl;
-	
 	@Column(name = "img_url", nullable = false, length = 255)
 	private String imgUrl;
 	

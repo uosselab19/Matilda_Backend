@@ -14,6 +14,7 @@ import uos.selab.enums.SortOrder;
 @Getter
 @Builder
 public class SelectItemDTO {	
+	
 	private String title; // 키 값 1
 
 	private double minPrice; // 키 값 2

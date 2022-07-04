@@ -25,7 +25,6 @@ import uos.selab.exceptions.ResourceNotFoundException;
 import uos.selab.mappers.MemberMapper;
 import uos.selab.repositories.MemberRepository;
 
-
 @RequiredArgsConstructor
 @RestController()
 @RequestMapping("/members")
