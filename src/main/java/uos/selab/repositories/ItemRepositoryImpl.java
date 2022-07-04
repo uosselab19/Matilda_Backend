@@ -2,7 +2,6 @@ package uos.selab.repositories;
 
 import static uos.selab.domains.QItem.item;
 
-import java.util.HashMap;
 import java.util.List;
 
 import com.querydsl.core.BooleanBuilder;
@@ -20,16 +19,16 @@ class ItemRepositoryImpl implements ItemRepositoryCustom {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public List<Item> findAllByDTO(HashMap<String, String> itemDTO) {
+	public List<Item> findAllByDTO(SelectItemDTO itemDTO) {
 
 		// from 검색 조건 설정
 		JPAQuery<Item> queryBuilder = queryFactory.selectFrom(item);
 
 		// where 검색 조건 설정
 		BooleanBuilder builder = new BooleanBuilder();
-		String title = itemDTO.get("title"), catCode = itemDTO.get("catCode"), stateCode = itemDTO.get("stateCode");
-		int memberNum = Integer.parseInt(itemDTO.get("memberNum"));
-		double minPrice = Double.parseDouble(itemDTO.get("minPrice")), maxPrice = Double.parseDouble(itemDTO.get("maxPrice"));
+		String title = itemDTO.getTitle(), catCode = itemDTO.getCatCode(), stateCode = itemDTO.getStateCode();
+		int memberNum = itemDTO.getMemberNum();
+		double minPrice = itemDTO.getMinPrice(), maxPrice = itemDTO.getMaxPrice();
 
 		if (!StringUtils.isNullOrEmpty(title)) {
 			builder.and(item.title.contains(title));
@@ -59,66 +58,66 @@ class ItemRepositoryImpl implements ItemRepositoryCustom {
 
 		queryBuilder.where(builder);
 
-//		// orderBy 검색 조건 설정
-//		switch (ItemSortKey.valueOf(itemDTO.get("sortKey"))) {
-//			// ID만 정렬
-//			case ID:
-//				switch (itemDTO.getSortOrder()) {
-//					case ASC:
-//						queryBuilder.orderBy(item.itemNum.asc());
-//						break;
-//					case DESC:
-//						queryBuilder.orderBy(item.itemNum.desc());
-//						break;
-//				}
-//			// TITLE만 정렬
-//			case TITLE:
-//				switch (itemDTO.getSortOrder()) {
-//					case ASC:
-//						queryBuilder.orderBy(item.title.asc());
-//						break;
-//					case DESC:
-//						queryBuilder.orderBy(item.title.desc());
-//						break;
-//				}
-//				break;
-//			// PRICE만 정렬
-//			case PRICE:
-//				switch (itemDTO.getSortOrder()) {
-//					case ASC:
-//						queryBuilder.orderBy(item.price.asc());
-//						break;
-//					case DESC:
-//						queryBuilder.orderBy(item.price.desc());
-//						break;
-//				}
-//				break;
-//			// TITLE은 sortOrder, PRICE는 asc 고정
-//			case TITLEPRICE0:
-//				switch (itemDTO.getSortOrder()) {
-//					case ASC:
-//						queryBuilder.orderBy(item.title.asc(), item.price.asc());
-//						break;
-//					case DESC:
-//						queryBuilder.orderBy(item.title.desc(), item.price.asc());
-//						break;
-//				}
-//				break;
-//			// TITLE은 sortOrder, PRICE는 desc 고정
-//			case TITLEPRICE1:
-//				switch (itemDTO.getSortOrder()) {
-//					case ASC:
-//						queryBuilder.orderBy(item.title.asc(), item.price.desc());
-//						break;
-//					case DESC:
-//						queryBuilder.orderBy(item.title.desc(), item.price.desc());
-//						break;
-//				}
-//				break;
-//		}
+		// orderBy 검색 조건 설정
+		switch (itemDTO.getSortKey()) {
+			// ID만 정렬
+			case ID:
+				switch (itemDTO.getSortOrder()) {
+					case ASC:
+						queryBuilder.orderBy(item.itemNum.asc());
+						break;
+					case DESC:
+						queryBuilder.orderBy(item.itemNum.desc());
+						break;
+				}
+			// TITLE만 정렬
+			case TITLE:
+				switch (itemDTO.getSortOrder()) {
+					case ASC:
+						queryBuilder.orderBy(item.title.asc());
+						break;
+					case DESC:
+						queryBuilder.orderBy(item.title.desc());
+						break;
+				}
+				break;
+			// PRICE만 정렬
+			case PRICE:
+				switch (itemDTO.getSortOrder()) {
+					case ASC:
+						queryBuilder.orderBy(item.price.asc());
+						break;
+					case DESC:
+						queryBuilder.orderBy(item.price.desc());
+						break;
+				}
+				break;
+			// TITLE은 sortOrder, PRICE는 asc 고정
+			case TITLEPRICE0:
+				switch (itemDTO.getSortOrder()) {
+					case ASC:
+						queryBuilder.orderBy(item.title.asc(), item.price.asc());
+						break;
+					case DESC:
+						queryBuilder.orderBy(item.title.desc(), item.price.asc());
+						break;
+				}
+				break;
+			// TITLE은 sortOrder, PRICE는 desc 고정
+			case TITLEPRICE1:
+				switch (itemDTO.getSortOrder()) {
+					case ASC:
+						queryBuilder.orderBy(item.title.asc(), item.price.desc());
+						break;
+					case DESC:
+						queryBuilder.orderBy(item.title.desc(), item.price.desc());
+						break;
+				}
+				break;
+		}
 
 		// 페이징 조건 설정
-		queryBuilder.offset(0).limit(100);
+		queryBuilder.offset(itemDTO.getSkip()).limit(itemDTO.getTake());
 
 		return queryBuilder.fetch();
 	}
