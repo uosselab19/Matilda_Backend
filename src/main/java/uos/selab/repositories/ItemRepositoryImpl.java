@@ -12,6 +12,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import uos.selab.domains.Item;
 import uos.selab.dtos.SelectItemDTO;
+import uos.selab.enums.ItemSortKey;
+import uos.selab.enums.SortOrder;
 
 @RequiredArgsConstructor
 class ItemRepositoryImpl implements ItemRepositoryCustom {
@@ -27,8 +29,10 @@ class ItemRepositoryImpl implements ItemRepositoryCustom {
 		// where 검색 조건 설정
 		BooleanBuilder builder = new BooleanBuilder();
 		String title = itemDTO.getTitle(), catCode = itemDTO.getCatCode(), stateCode = itemDTO.getStateCode();
-		int memberNum = itemDTO.getMemberNum();
+		int memberNum = itemDTO.getMemberNum(), skip = itemDTO.getSkip(), take = itemDTO.getTake();
 		double minPrice = itemDTO.getMinPrice(), maxPrice = itemDTO.getMaxPrice();
+		ItemSortKey sortKey = itemDTO.getSortKey();
+		SortOrder sortOrder = itemDTO.getSortOrder();
 
 		if (!StringUtils.isNullOrEmpty(title)) {
 			builder.and(item.title.contains(title));
@@ -59,10 +63,10 @@ class ItemRepositoryImpl implements ItemRepositoryCustom {
 		queryBuilder.where(builder);
 
 		// orderBy 검색 조건 설정
-		switch (itemDTO.getSortKey()) {
+		switch (sortKey) {
 			// ID만 정렬
 			case ID:
-				switch (itemDTO.getSortOrder()) {
+				switch (sortOrder) {
 					case ASC:
 						queryBuilder.orderBy(item.itemNum.asc());
 						break;
@@ -72,7 +76,7 @@ class ItemRepositoryImpl implements ItemRepositoryCustom {
 				}
 			// TITLE만 정렬
 			case TITLE:
-				switch (itemDTO.getSortOrder()) {
+				switch (sortOrder) {
 					case ASC:
 						queryBuilder.orderBy(item.title.asc());
 						break;
@@ -83,7 +87,7 @@ class ItemRepositoryImpl implements ItemRepositoryCustom {
 				break;
 			// PRICE만 정렬
 			case PRICE:
-				switch (itemDTO.getSortOrder()) {
+				switch (sortOrder) {
 					case ASC:
 						queryBuilder.orderBy(item.price.asc());
 						break;
@@ -94,7 +98,7 @@ class ItemRepositoryImpl implements ItemRepositoryCustom {
 				break;
 			// TITLE은 sortOrder, PRICE는 asc 고정
 			case TITLEPRICE0:
-				switch (itemDTO.getSortOrder()) {
+				switch (sortOrder) {
 					case ASC:
 						queryBuilder.orderBy(item.title.asc(), item.price.asc());
 						break;
@@ -105,7 +109,7 @@ class ItemRepositoryImpl implements ItemRepositoryCustom {
 				break;
 			// TITLE은 sortOrder, PRICE는 desc 고정
 			case TITLEPRICE1:
-				switch (itemDTO.getSortOrder()) {
+				switch (sortOrder) {
 					case ASC:
 						queryBuilder.orderBy(item.title.asc(), item.price.desc());
 						break;
@@ -117,7 +121,7 @@ class ItemRepositoryImpl implements ItemRepositoryCustom {
 		}
 
 		// 페이징 조건 설정
-		queryBuilder.offset(itemDTO.getSkip()).limit(itemDTO.getTake());
+		queryBuilder.offset(skip).limit(take);
 
 		return queryBuilder.fetch();
 	}
