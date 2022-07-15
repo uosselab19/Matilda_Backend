@@ -1,29 +1,46 @@
 package uos.selab.dtos;
 
+import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uos.selab.enums.ContractKeywordType;
+import uos.selab.enums.ContractSortKey;
+import uos.selab.enums.SortOrder;
 
 @AllArgsConstructor()
 @NoArgsConstructor()
 @Setter
 @Getter
 @Builder
-public class SelectContractDTO {	
-	
-	private int sellerNum; // 검색 값 1
-	
-	private int buyerNum; // 검색 값 2
-	
-	private int itemNum; // 검색 값 3
-	
-	private ContractKeywordType keywordType;
-	
-	private int skip; // paging skip
-	
-	private int take; // paging take 15
-	
+public class SelectContractDTO {
+
+	private int sellerNum;
+
+	private int buyerNum;
+
+	private int itemNum;
+
+	private Double minPrice;
+
+	private Double maxPrice;
+
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date startDate;
+
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date endDate;
+
+	private SortOrder sortOrder;
+
+	private ContractSortKey sortKey;
+
+	private int skip;
+
+	private int take;
+
 }

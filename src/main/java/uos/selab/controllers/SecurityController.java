@@ -19,25 +19,25 @@ import uos.selab.utils.JwtTokenProvider;
 @RequestMapping("/security")
 public class SecurityController {
 
-    // private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final MemberRepository memberRepo;
+	// private final PasswordEncoder passwordEncoder;
+	private final JwtTokenProvider jwtTokenProvider;
+	private final MemberRepository memberRepo;
 
-    // 로그인
-    @PostMapping("/login")
-    public String login(@RequestBody Map<String, String> user) {
-        Member member = memberRepo.findById(user.get("id"))
-                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 아이디입니다."));
-        /* if (!passwordEncoder.matches(user.get("password"), member.getPassword())) {
-            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
-        } */
-        if (!user.get("password").toString().equals(member.getPassword())) {
-            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
-        }
-        
-        List<String> roles = new ArrayList<>();
-        roles.add("ROLE_MEMBER");
-        
-        return jwtTokenProvider.createToken(member, roles);
-    }
+	// 로그인
+	@PostMapping("/login")
+	public String login(@RequestBody Map<String, String> user) {
+		Member member = memberRepo.findById(user.get("id"))
+				.orElseThrow(() -> new IllegalArgumentException("가입되지 않은 아이디입니다."));
+//        if (!passwordEncoder.matches(user.get("password"), member.getPassword())) {
+//            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+//        }
+		if (!user.get("password").toString().equals(member.getPassword())) {
+			throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+		}
+
+		List<String> roles = new ArrayList<>();
+		roles.add("ROLE_MEMBER");
+
+		return jwtTokenProvider.createToken(member, roles);
+	}
 }

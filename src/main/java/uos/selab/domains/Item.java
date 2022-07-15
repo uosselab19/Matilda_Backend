@@ -28,46 +28,46 @@ import lombok.Setter;
 @Builder
 public class Item {
 	@Id
-	@Column(name="item_num")
+	@Column(name = "item_num")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int itemNum;
-	
+
 	/* Foreign Key */
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_num", nullable = false)
 	@JsonIgnore
 	private Member member;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "cat_code", nullable = false)
 	@JsonIgnore
 	private Category category;
-	
+
 	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "item_num", nullable = false, insertable=false, updatable=false)
+	@JoinColumn(name = "item_num", nullable = false, insertable = false, updatable = false)
 	@JsonIgnore
 	private List<Contract> contracts;
 	/* */
-	
+
 	@Column(nullable = false, length = 45)
 	private String title;
-	
+
 	@Column(nullable = true, length = 300)
 	private String description;
-	
+
 	@Column(name = "img_url", nullable = false, length = 255)
 	private String imgUrl;
-	
+
 	@Column(name = "object_url", nullable = false, length = 255)
 	private String objectUrl;
-	
+
 	@Column(name = "nft_address", nullable = true, unique = true, length = 500)
 	private String nftAddress;
-	
+
 	@Column(name = "state_code", nullable = false, length = 3)
 	private String stateCode;
-	
+
 	@Column(nullable = true)
 	private double price;
-	
+
 }

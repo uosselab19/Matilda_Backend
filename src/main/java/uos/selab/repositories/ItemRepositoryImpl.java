@@ -12,6 +12,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import uos.selab.domains.Item;
 import uos.selab.dtos.SelectItemDTO;
+import uos.selab.enums.ItemSortKey;
+import uos.selab.enums.SortOrder;
 
 @RequiredArgsConstructor
 class ItemRepositoryImpl implements ItemRepositoryCustom {
@@ -28,41 +30,41 @@ class ItemRepositoryImpl implements ItemRepositoryCustom {
 		BooleanBuilder builder = new BooleanBuilder();
 		String title = itemDTO.getTitle(), catCode = itemDTO.getCatCode(), stateCode = itemDTO.getStateCode();
 		int memberNum = itemDTO.getMemberNum();
-		double minPrice = itemDTO.getMinPrice(), maxPrice = itemDTO.getMaxPrice();
+		Double minPrice = itemDTO.getMinPrice(), maxPrice = itemDTO.getMaxPrice();
 
-		if (!StringUtils.isNullOrEmpty(title)) {
+		if (!StringUtils.isNullOrEmpty(title))
 			builder.and(item.title.contains(title));
-		}
-		
-		// minPrice의 기본값은 -1
-		if (minPrice >= 0) {
-			builder.and(item.price.goe(minPrice));
-		}
-		
-		// maxPrice의 기본값은 -1
-		if (maxPrice >= 0 && maxPrice >= minPrice) {
-			builder.and(item.price.loe(maxPrice));
-		}
 
-		if (memberNum != 0) {
+		if (minPrice != null)
+			builder.and(item.price.goe(minPrice.doubleValue()));
+
+		if (maxPrice != null)
+			builder.and(item.price.loe(maxPrice.doubleValue()));
+
+		if (memberNum != 0)
 			builder.and(item.member.memberNum.eq(memberNum));
-		}
 
-		if (!StringUtils.isNullOrEmpty(catCode)) {
+		if (!StringUtils.isNullOrEmpty(catCode))
 			builder.and(item.category.catCode.eq(catCode));
-		}
 
-		if (!StringUtils.isNullOrEmpty(stateCode)) {
+		if (!StringUtils.isNullOrEmpty(stateCode))
 			builder.and(item.stateCode.eq(stateCode));
-		}
 
 		queryBuilder.where(builder);
 
 		// orderBy 검색 조건 설정
-		switch (itemDTO.getSortKey()) {
-			// ID만 정렬
+		ItemSortKey sortKey = itemDTO.getSortKey();
+		if (sortKey == null)
+			sortKey = ItemSortKey.ID;
+
+		SortOrder sortOrder = itemDTO.getSortOrder();
+		if (sortOrder == null)
+			sortOrder = SortOrder.ASC;
+
+		switch (sortKey) {
+			// ID만 정렬 (기본값)
 			case ID:
-				switch (itemDTO.getSortOrder()) {
+				switch (sortOrder) {
 					case ASC:
 						queryBuilder.orderBy(item.itemNum.asc());
 						break;
@@ -72,7 +74,7 @@ class ItemRepositoryImpl implements ItemRepositoryCustom {
 				}
 			// TITLE만 정렬
 			case TITLE:
-				switch (itemDTO.getSortOrder()) {
+				switch (sortOrder) {
 					case ASC:
 						queryBuilder.orderBy(item.title.asc());
 						break;
@@ -83,7 +85,7 @@ class ItemRepositoryImpl implements ItemRepositoryCustom {
 				break;
 			// PRICE만 정렬
 			case PRICE:
-				switch (itemDTO.getSortOrder()) {
+				switch (sortOrder) {
 					case ASC:
 						queryBuilder.orderBy(item.price.asc());
 						break;
@@ -92,9 +94,9 @@ class ItemRepositoryImpl implements ItemRepositoryCustom {
 						break;
 				}
 				break;
-			// TITLE은 sortOrder, PRICE는 asc 고정
-			case TITLEPRICE0:
-				switch (itemDTO.getSortOrder()) {
+			// TITLE 먼저 정렬. TITLE은 sortOrder, PRICE는 asc 고정
+			case TITLE_PRICE_ASC:
+				switch (sortOrder) {
 					case ASC:
 						queryBuilder.orderBy(item.title.asc(), item.price.asc());
 						break;
@@ -103,9 +105,9 @@ class ItemRepositoryImpl implements ItemRepositoryCustom {
 						break;
 				}
 				break;
-			// TITLE은 sortOrder, PRICE는 desc 고정
-			case TITLEPRICE1:
-				switch (itemDTO.getSortOrder()) {
+			// TITLE 먼저 정렬. TITLE은 sortOrder, PRICE는 desc 고정
+			case TITLE_PRICE_DESC:
+				switch (sortOrder) {
 					case ASC:
 						queryBuilder.orderBy(item.title.asc(), item.price.desc());
 						break;
@@ -114,10 +116,40 @@ class ItemRepositoryImpl implements ItemRepositoryCustom {
 						break;
 				}
 				break;
+			// PRICE 먼저 정렬. TITLE은 sortOrder, PRICE는 asc 고정
+			case PRICE_TITLE_ASC:
+				switch (sortOrder) {
+					case ASC:
+						queryBuilder.orderBy(item.price.asc(), item.title.asc());
+						break;
+					case DESC:
+						queryBuilder.orderBy(item.price.asc(), item.title.desc());
+						break;
+				}
+				break;
+			// PRICE 먼저 정렬. TITLE은 sortOrder, PRICE는 desc 고정
+			case PRICE_TITLE_DESC:
+				switch (sortOrder) {
+					case ASC:
+						queryBuilder.orderBy(item.price.desc(), item.title.asc());
+						break;
+					case DESC:
+						queryBuilder.orderBy(item.price.desc(), item.title.desc());
+						break;
+				}
+				break;
 		}
 
 		// 페이징 조건 설정
-		queryBuilder.offset(itemDTO.getSkip()).limit(itemDTO.getTake());
+		int skip = itemDTO.getSkip(), take = itemDTO.getTake();
+
+		queryBuilder.offset(skip);
+
+		// take를 입력하지 않으면 12개 반환
+		if (take <= 0)
+			queryBuilder.limit(12);
+		else
+			queryBuilder.limit(take);
 
 		return queryBuilder.fetch();
 	}

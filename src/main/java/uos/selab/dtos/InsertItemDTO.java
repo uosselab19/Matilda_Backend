@@ -17,9 +17,8 @@ public class InsertItemDTO {
 
 	private String catCode;
 
-	private String thumbImgUrl;
-	
 	private String imgUrl;
-	
+
 	private String objectUrl;
+
 }

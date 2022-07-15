@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import uos.selab.domains.Member;
 
 @Repository
-public interface MemberRepository extends JpaRepository<Member, Integer>{
+public interface MemberRepository extends JpaRepository<Member, Integer> {
+
 	public Optional<Member> findById(String id);
+
 }

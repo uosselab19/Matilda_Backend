@@ -22,44 +22,42 @@ public class CustomUserDetails implements UserDetails {
 
 	private static final long serialVersionUID = 1L;
 
-    private int num;
+	private int num;
 
-    private String id;
+	private String id;
 
-    private String password;
+	private String password;
 
-    @Builder.Default
-    private List<String> roles = new ArrayList<>();
+	@Builder.Default
+	private List<String> roles = new ArrayList<>();
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-    }
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return this.roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+	}
 
-    @Override
-    public String getUsername() {
-        return getId();
-    }
+	@Override
+	public String getUsername() {
+		return getId();
+	}
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
 
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
 }

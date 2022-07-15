@@ -2,7 +2,6 @@ package uos.selab.controllers;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -18,8 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import uos.selab.domains.Contract;
-import uos.selab.domains.Item;
-import uos.selab.domains.Member;
+import uos.selab.domains.Contract.ContractBuilder;
 import uos.selab.dtos.InsertContractDTO;
 import uos.selab.dtos.PrintContractDTO;
 import uos.selab.dtos.SelectContractDTO;
@@ -41,106 +39,73 @@ public class ContractController {
 	@GetMapping()
 	@ResponseStatus(value = HttpStatus.OK)
 	@ApiOperation(value = "Contract 리스트 조회", protocols = "http")
-	public ResponseEntity<List<PrintContractDTO>> findAll() {
-		List<Contract> contracts = contractRepo.findAll();
-		
+	public ResponseEntity<List<PrintContractDTO>> findAll(SelectContractDTO contractDTO) {
+		List<Contract> contracts = contractRepo.findAllByDTO(contractDTO);
+
 		if (contracts.isEmpty()) {
 			throw new ResourceNotFoundException("Not found Contracts");
 		}
-		
-		List<PrintContractDTO> list = new ArrayList<PrintContractDTO>( contracts.size() );
-        for ( Contract contract : contracts ) {
-            list.add( PrintContractDTO.builder().itemTitle(contract.getItem().getTitle())
-            		.sellerNickName(contract.getSeller() ==null ? "none" : contract.getSeller().getNickname())
-            		.buyerNickName(contract.getBuyer().getNickname())
-            		.stateCode(contract.getStateCode()).price(contract.getPrice()).build());
-        }
-		
-		return new ResponseEntity<>(list, HttpStatus.OK);
+
+		return new ResponseEntity<>(toPrintDTO(contracts), HttpStatus.OK);
+	}
+	
+	@GetMapping("/count")
+	@ResponseStatus(value = HttpStatus.OK)
+	@ApiOperation(value = "Contract 리스트 개수 확인", protocols = "http")
+	public ResponseEntity<Integer> countAll(SelectContractDTO contractDTO) {
+		List<Contract> contracts = contractRepo.findAllByDTO(contractDTO);
+
+		return new ResponseEntity<>(contracts.size(), HttpStatus.OK);
 	}
 
 	@GetMapping("/{num}")
 	@ApiOperation(value = "contract_num으로 Contract 정보 조회", protocols = "http")
 	public ResponseEntity<PrintContractDTO> findById(@PathVariable("num") Integer contract_num) {
+
 		Contract contract = contractRepo.findById(contract_num)
 				.orElseThrow(() -> new ResourceNotFoundException("Not found Contract with id = " + contract_num));
-		
-		PrintContractDTO result = PrintContractDTO.builder().itemTitle(contract.getItem().getTitle())
-        		.sellerNickName(contract.getSeller() ==null ? "none" : contract.getSeller().getNickname())
-        		.buyerNickName(contract.getBuyer().getNickname())
-        		.stateCode(contract.getStateCode()).price(contract.getPrice()).build();
-		
-		return new ResponseEntity<>(result, HttpStatus.OK);
-	}
-	
-	@PostMapping("/select")
-	@ApiOperation(value = "SelectContractDTO로 Contract 목록 조회", protocols = "http")
-	public ResponseEntity<List<PrintContractDTO>> findAll(@RequestBody SelectContractDTO contractDTO) {
-		List<Contract> contracts = null;
-		
-		switch(contractDTO.getKeywordType()) {
-			case SELLER:
-				contracts = contractRepo.findALLBySeller(memberRepo.getById(contractDTO.getSellerNum()));
-				break;
-			case BUYER:
-				contracts = contractRepo.findALLByBuyer(memberRepo.getById(contractDTO.getBuyerNum()));
-				break;
-			case SELLER_OR_BUYER:
-				contracts = contractRepo.findALLBySellerOrBuyer(memberRepo.getById(contractDTO.getSellerNum()),memberRepo.getById(contractDTO.getBuyerNum()));
-				break;
-			case ITEM:
-				contracts = contractRepo.findALLByItem(itemRepo.getById(contractDTO.getItemNum()));
-				break;
-		}
-		
-		if (contracts.isEmpty()) {
-			throw new ResourceNotFoundException("Not found Contracts");
-		}
-		
-		List<PrintContractDTO> list = new ArrayList<PrintContractDTO>( contracts.size() );
-        for ( Contract contract : contracts ) {
-            list.add( PrintContractDTO.builder().itemTitle(contract.getItem().getTitle())
-            		.sellerNickName(contract.getSeller() ==null ? "none" : contract.getSeller().getNickname())
-            		.buyerNickName(contract.getBuyer().getNickname())
-            		.stateCode(contract.getStateCode()).price(contract.getPrice()).build());
-        }
-		
-		return new ResponseEntity<>(list, HttpStatus.OK);
+
+		return new ResponseEntity<>(toPrintDTO(contract), HttpStatus.OK);
 	}
 
 	@PostMapping()
 	@ApiOperation(value = "Contract 등록", protocols = "http")
-	public ResponseEntity<HashMap<String, String>> insert(@RequestBody InsertContractDTO contractDTO) {
-		//InsertContractDTO에서 받아온 JSON에서 데이터 추출
-		
-		Member seller = contractDTO.getSellerNum() != -1 ? memberRepo.getById(contractDTO.getSellerNum()) : null;
-		Member buyer = contractDTO.getBuyerNum() != -1 ? memberRepo.getById(contractDTO.getBuyerNum()) : null;
-		Item item = itemRepo.getById(contractDTO.getItemNum());
-		
-		//ContractDTO를 Contract 객체로 매핑
-		Contract contract = ContractMapper.INSTANCE.toEntity(contractDTO);
-		//Contract 객체의 부족한 속성 부여
-		contract.setSeller(seller);
-		contract.setBuyer(buyer);
-		contract.setItem(item);
-		contract.setCreatedAt(new Date());
-		 
-		Contract resultContract = contractRepo.save(contract);
-		
-		//Item 객체의 부족한 속성 부여
-		//item.setMember(resultContract.getStateCode() == "TR" ? buyer : seller); // TR만 buyer가 소유자인 경우
-		item.setMember(buyer); // 현재는 buyer가 소유자이므로 item member를 buyer로
-		item.setPrice(resultContract.getPrice());
-		item.setStateCode(resultContract.getStateCode());
-		Item resultItem = itemRepo.save(item);
-		
-		//반환 값 지정
-		HashMap<String, String> result = new HashMap<String, String>();
-		result.put("contract_num", String.valueOf(resultContract.getContractNum()));
-		result.put("item_title", String.valueOf(resultItem.getTitle()));
-		result.put("owner_name", String.valueOf(resultItem.getMember().getNickname()));
-		
-		//저장 및 결과 반환
-		return new ResponseEntity<>(result, HttpStatus.OK); 
+	public ResponseEntity<PrintContractDTO> insert(@RequestBody InsertContractDTO contractDTO) {
+
+		ContractBuilder contractBuilder = Contract.builder();
+		contractBuilder.seller(memberRepo.getById(contractDTO.getSellerNum()))
+				.buyer(memberRepo.getById(contractDTO.getBuyerNum())).item(itemRepo.getById(contractDTO.getItemNum()))
+				.stateCode(contractDTO.getStateCode()).price(contractDTO.getPrice()).createdAt(new Date());
+
+		Contract newContract = contractRepo.save(contractBuilder.build());
+
+		// 저장 및 결과 반환
+		return new ResponseEntity<>(toPrintDTO(newContract), HttpStatus.OK);
+	}
+
+	// 단일 PrintContractDTO 생성 함수
+	private PrintContractDTO toPrintDTO(Contract contract) {
+
+		PrintContractDTO printContract = ContractMapper.INSTANCE.toPrintDTO(contract);
+
+		printContract.setItemNum(contract.getItem().getItemNum());
+		printContract.setItemTitle(contract.getItem().getTitle());
+		printContract.setSellerNum(contract.getSeller().getMemberNum());
+		printContract.setSellerNickName(contract.getSeller().getNickname());
+		printContract.setBuyerNum(contract.getBuyer().getMemberNum());
+		printContract.setBuyerNickName(contract.getBuyer().getNickname());
+
+		return printContract;
+	}
+
+	// PrintContractDTO 리스트 생성 함수
+	private List<PrintContractDTO> toPrintDTO(List<Contract> contracts) {
+		List<PrintContractDTO> printContracts = new ArrayList<>();
+
+		for (Contract contract : contracts) {
+			printContracts.add(toPrintDTO(contract));
+		}
+
+		return printContracts;
 	}
 }

@@ -19,10 +19,10 @@ import uos.selab.utils.JwtTokenProvider;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private JwtTokenProvider jwtTokenProvider;
-	
+
 	public WebSecurityConfig(JwtTokenProvider jwtTokenProvider) {
-    	this.jwtTokenProvider = jwtTokenProvider;
-    }
+		this.jwtTokenProvider = jwtTokenProvider;
+	}
 
 	// 암호화에 필요한 PasswordEncoder 를 Bean 등록합니다.
 	@Bean

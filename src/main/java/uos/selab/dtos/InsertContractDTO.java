@@ -17,16 +17,16 @@ public class InsertContractDTO {
 
 	/* Foreign Key */
 	private int itemNum;
-	
+
 	private int sellerNum;
-	
+
 	private int buyerNum;
 	/* */
 
 	private String stateCode;
 
 	private double price;
-	
-	// private Date createdAt;	
+
+	// private Date createdAt;
 
 }
