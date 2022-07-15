@@ -14,24 +14,25 @@ import lombok.Setter;
 public class PrintDetailItemDTO {
 
 	private int itemNum;
-	
+
 	private int memberNum;
-	
+
 	private String memberNickName;
-	
+
 	private String memberThumbImgUrl;
-	
+
 	private String catCode;
-	
+
 	private String title;
-	
+
 	private String description;
-		
+
 	private String imgUrl;
-	
+
 	private String nftAddress;
-	
+
 	private String stateCode;
-	
+
 	private double price;
+
 }

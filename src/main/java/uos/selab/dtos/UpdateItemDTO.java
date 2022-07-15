@@ -14,19 +14,19 @@ import lombok.Setter;
 @Getter
 @Builder
 public class UpdateItemDTO {
-	
+
 	@Size(max = 45)
 	private String title;
 
 	@Size(max = 300)
 	private String description;
-	
+
 	@Size(max = 500)
 	private String nftAddress;
-	
+
 	@Size(max = 3)
 	private String stateCode;
-	
+
 	private double price;
 
 }

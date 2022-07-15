@@ -23,18 +23,18 @@ import lombok.Setter;
 @Builder
 public class Category {
 	@Id
-	@Column(name="cat_code", length=3)
+	@Column(name = "cat_code", length = 3)
 	private String catCode;
-	
+
 	/* Foreign Key */
 	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name="cat_code", nullable=false, insertable=false, updatable=false)
+	@JoinColumn(name = "cat_code", nullable = false, insertable = false, updatable = false)
 	private List<Item> items;
 	/*  */
-	
+
 	@Column(nullable = false)
 	private String title;
-	
-	@Column(name="img_url", nullable = false)
+
+	@Column(name = "img_url", nullable = false)
 	private String imgUrl;
 }

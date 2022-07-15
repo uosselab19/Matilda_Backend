@@ -1,10 +1,8 @@
 package uos.selab.dtos;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
-
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,29 +15,26 @@ import lombok.Setter;
 @Setter
 @Getter
 @Builder
-public class UpdateMemberDTO {
+public class PrintMemberDTO {
 
-	@Size(max = 300)
-	private String password;
+	private int memberNum;
 
-	@Size(min = 1, max = 16)
+	private String id;
+
 	private String nickname;
 
-	@Email
 	private String email;
 
-	@Size(max = 300)
 	private String description;
 
-	@Size(max = 255)
 	private String profileImg;
 
-	@Size(max = 255)
 	private String thumbProfileImg;
-	
+
 	private ArrayList<HashMap<String, Integer>> presetList;
 
-	@Size(max = 500)
 	private String walletAddress;
+
+	private Date createdAt;
 
 }

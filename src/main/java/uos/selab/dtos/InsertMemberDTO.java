@@ -23,6 +23,6 @@ public class InsertMemberDTO {
 
 	private String email;
 
-	// private Date createdAt;	
+	// private Date createdAt;
 
 }

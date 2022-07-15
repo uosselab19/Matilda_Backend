@@ -7,6 +7,6 @@ import uos.selab.dtos.SelectItemDTO;
 
 public interface ItemRepositoryCustom {
 
-    List<Item> findAllByDTO(SelectItemDTO itemDTO);
+	List<Item> findAllByDTO(SelectItemDTO itemDTO);
 
 }

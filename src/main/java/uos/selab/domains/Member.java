@@ -14,6 +14,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,20 +31,23 @@ import lombok.Setter;
 public class Member {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="member_num")
+	@Column(name = "member_num")
 	private int memberNum;
-	
-	/* Foreign Key */	
+
+	/* Foreign Key */
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "seller_num", nullable = false, insertable = false, updatable = false)
+	@JsonIgnore
 	private List<Contract> soldContracts;
-	
+
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "buyer_num", nullable = false, insertable = false, updatable = false)
+	@JsonIgnore
 	private List<Contract> boughtContracts;
-	
+
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_num", nullable = false, insertable = false, updatable = false)
+	@JsonIgnore
 	private List<Item> items;
 	/* */
 
@@ -57,20 +62,23 @@ public class Member {
 
 	@Column(nullable = false, length = 64)
 	private String email;
-	
+
 	@Column(nullable = true, length = 300)
 	private String description;
-	
-	@Column(name="profile_img", nullable = true, length = 255)
+
+	@Column(name = "profile_img", nullable = true, length = 255)
 	private String profileImg;
-	
-	@Column(name="thumb_profile_img", nullable = true, length = 255)
+
+	@Column(name = "thumb_profile_img", nullable = true, length = 255)
 	private String thumbProfileImg;
-	
-	@Column(name="wallet_address", nullable = true, length = 500)
+
+	@Column(name = "preset", nullable = true, columnDefinition = "json")
+	private String preset; 
+
+	@Column(name = "wallet_address", nullable = true, length = 500)
 	private String walletAddress;
 
-	@Column(name="created_at", nullable = false)
+	@Column(name = "created_at", nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdAt;
 }

@@ -14,9 +14,9 @@ public class MatildaBackendApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MatildaBackendApplication.class, args);
 	}
-	
+
 	@Bean
-	public JPAQueryFactory jpaQueryFactory(EntityManager em){
+	public JPAQueryFactory jpaQueryFactory(EntityManager em) {
 		return new JPAQueryFactory(em);
 	}
 
