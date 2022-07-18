@@ -21,10 +21,13 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import uos.selab.domains.Item;
 import uos.selab.domains.Item.ItemBuilder;
+import uos.selab.dtos.InsertContractDTO;
+import uos.selab.dtos.InsertContractDTO.InsertContractDTOBuilder;
 import uos.selab.dtos.InsertItemDTO;
 import uos.selab.dtos.PrintDetailItemDTO;
 import uos.selab.dtos.PrintItemDTO;
 import uos.selab.dtos.SelectItemDTO;
+import uos.selab.dtos.UpdateDetailItemDTO;
 import uos.selab.dtos.UpdateItemDTO;
 import uos.selab.exceptions.ResourceNotFoundException;
 import uos.selab.mappers.ItemMapper;
@@ -42,6 +45,8 @@ public class ItemController {
 	private final MemberRepository memberRepo;
 	private final CategoryRepository categoryRepo;
 
+	private final ContractController contractController;
+
 	@GetMapping()
 	@ResponseStatus(value = HttpStatus.OK)
 	@ApiOperation(value = "Item 리스트 검색", protocols = "http")
@@ -58,7 +63,7 @@ public class ItemController {
 		// printDTO 형식으로 반환
 		return new ResponseEntity<>(toPrintDTO(items), HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/count")
 	@ResponseStatus(value = HttpStatus.OK)
 	@ApiOperation(value = "Item 리스트 개수 확인", protocols = "http")
@@ -131,26 +136,84 @@ public class ItemController {
 		// 생성한 아이템 저장
 		Item newItem = itemRepo.save(itemBuilder.build());
 
-		// 아이템 생성 컨트랙트 실행
-		//
-		//
+		// 아이템 생성 컨트랙트 생성
+		InsertContractDTOBuilder insertContractBuilder = InsertContractDTO.builder();
+		insertContractBuilder.itemNum(newItem.getItemNum())
+							 .sellerNum(newItem.getMember().getMemberNum())
+							 .stateCode(newItem.getStateCode());
+		contractController.insert(insertContractBuilder.build());
 
 		// printDTO 형식으로 반환
-		return new ResponseEntity<>(toPrintDTO(newItem), HttpStatus.OK);
+		return new ResponseEntity<>(toPrintDTO(newItem), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{num}")
-	@ApiOperation(value = "기존 Item 변경", protocols = "http")
+	@ApiOperation(value = "기존 Item 단순 수정: title, description, price", protocols = "http")
 	public ResponseEntity<PrintItemDTO> update(@PathVariable("num") Integer num, @Valid @RequestBody UpdateItemDTO itemDTO) {
 
 		// 수정 할 아이템 검색. 검색 된 아이템이 없다면 예외 발생
 		Item item = itemRepo.findById(num)
 				.orElseThrow(() -> new ResourceNotFoundException("Not found Item with id = " + num));
-		System.out.println("name : " + itemDTO.getTitle());
 
 		// ItemMapper를 사용해 item 객체의 내용 수정
 		ItemMapper.INSTANCE.updateFromDto(itemDTO, item);
-		System.out.println("name : " + item.getTitle());
+
+		// 수정사항 DB에 저장
+		Item newItem = itemRepo.save(item);
+
+		// printDTO 형식으로 반환
+		return new ResponseEntity<>(toPrintDTO(newItem), HttpStatus.OK);
+	}
+
+	@PutMapping("/change/{num}")
+	@ApiOperation(value = "Item 상태 변경: mint, 판매 등록/중지/중단, 거래", protocols = "http")
+	public ResponseEntity<PrintItemDTO> change(@PathVariable("num") Integer num, @Valid @RequestBody UpdateDetailItemDTO itemDTO) {
+
+		// 수정 할 아이템 검색. 검색 된 아이템이 없다면 예외 발생
+		Item item = itemRepo.findById(num)
+				.orElseThrow(() -> new ResourceNotFoundException("Not found Item with id = " + num));
+
+		// contract 작성 준비
+		InsertContractDTOBuilder insertContractBuilder = InsertContractDTO.builder();
+		insertContractBuilder.itemNum(item.getItemNum());
+
+		// option별 명령 수행
+		switch (itemDTO.getOption()) {
+			// 초기 NFT 민팅
+			case MINT:
+				item.setNftAddress(itemDTO.getNftAddress());
+				item.setStateCode("NOS");
+				break;
+			// 판매 등록
+			case STATE_OS:
+				item.setStateCode("OS");
+				break;
+			// 판매 중지
+			case STATE_NOS:
+				item.setStateCode("NOS");
+				break;
+			// 거래 체결
+			case TRADE:
+				// 거래 완료 기록
+				insertContractBuilder.sellerNum(item.getMember().getMemberNum()).buyerNum(itemDTO.getBuyerNum())
+						.stateCode("TR").price(item.getPrice());
+				contractController.insert(insertContractBuilder.build());
+
+				// 소유자 변경 및 판매 중지 상태로 변경
+				item.setMember(memberRepo.getById(itemDTO.getBuyerNum()));
+				item.setStateCode("NOS");
+
+				insertContractBuilder = InsertContractDTO.builder();
+				insertContractBuilder.itemNum(item.getItemNum());
+				break;
+			// 판매 중단
+			case STOP:
+				item.setStateCode("ST");
+				break;
+		}
+
+		insertContractBuilder.sellerNum(item.getMember().getMemberNum()).stateCode(item.getStateCode());
+		contractController.insert(insertContractBuilder.build());
 
 		// 수정사항 DB에 저장
 		Item newItem = itemRepo.save(item);

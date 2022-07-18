@@ -8,8 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import uos.selab.domains.Contract;
 import uos.selab.domains.Contract.ContractBuilder;
+import uos.selab.domains.Member;
 import uos.selab.dtos.InsertContractDTO;
 import uos.selab.dtos.PrintContractDTO;
 import uos.selab.dtos.SelectContractDTO;
@@ -68,19 +67,26 @@ public class ContractController {
 		return new ResponseEntity<>(toPrintDTO(contract), HttpStatus.OK);
 	}
 
-	@PostMapping()
-	@ApiOperation(value = "Contract 등록", protocols = "http")
-	public ResponseEntity<PrintContractDTO> insert(@RequestBody InsertContractDTO contractDTO) {
+//	@PostMapping()
+//	@ApiOperation(value = "Contract 등록", protocols = "http")
+	public Contract insert(InsertContractDTO contractDTO) {
+
+		Member seller = contractDTO.getSellerNum() != 0 ? memberRepo.getById(contractDTO.getSellerNum()) : null;
+		Member buyer = contractDTO.getBuyerNum() != 0 ? memberRepo.getById(contractDTO.getBuyerNum()) : null;
 
 		ContractBuilder contractBuilder = Contract.builder();
-		contractBuilder.seller(memberRepo.getById(contractDTO.getSellerNum()))
-				.buyer(memberRepo.getById(contractDTO.getBuyerNum())).item(itemRepo.getById(contractDTO.getItemNum()))
-				.stateCode(contractDTO.getStateCode()).price(contractDTO.getPrice()).createdAt(new Date());
+		contractBuilder.seller(seller)
+					   .buyer(buyer)
+					   .item(itemRepo.getById(contractDTO.getItemNum()))
+					   .stateCode(contractDTO.getStateCode())
+					   .createdAt(new Date());
+		if (contractDTO.getPrice() != 0)
+			contractBuilder.price(contractDTO.getPrice());
 
 		Contract newContract = contractRepo.save(contractBuilder.build());
 
 		// 저장 및 결과 반환
-		return new ResponseEntity<>(toPrintDTO(newContract), HttpStatus.OK);
+		return newContract; //new ResponseEntity<>(toPrintDTO(newContract), HttpStatus.OK)
 	}
 
 	// 단일 PrintContractDTO 생성 함수

@@ -73,7 +73,7 @@ public class MemberController {
 
 		newMember = memberRepo.save(newMember);
 
-		return new ResponseEntity<>(toPrintDTO(newMember), HttpStatus.OK);
+		return new ResponseEntity<>(toPrintDTO(newMember), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{num}")
