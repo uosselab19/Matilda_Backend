@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +39,7 @@ import uos.selab.repositories.MemberRepository;
 @RequiredArgsConstructor
 @RestController()
 @RequestMapping("/items")
+@Transactional(readOnly = true)
 public class ItemController {
 
 	// Repository와 통신하는 클래스
@@ -122,7 +124,8 @@ public class ItemController {
 
 	@PostMapping()
 	@ApiOperation(value = "신규 Item 추가", protocols = "http")
-	public ResponseEntity<PrintItemDTO> insert(@RequestBody InsertItemDTO itemDTO) {
+	@Transactional()
+	public ResponseEntity<PrintItemDTO> insert(@RequestBody InsertItemDTO itemDTO) throws InterruptedException {
 
 		// 아이템 이름으로 지정할 임의의 문자열로 현재 시간 사용
 		Date now = new Date();
@@ -149,6 +152,7 @@ public class ItemController {
 
 	@PutMapping("/{num}")
 	@ApiOperation(value = "기존 Item 단순 수정: title, description, price", protocols = "http")
+	@Transactional()
 	public ResponseEntity<PrintItemDTO> update(@PathVariable("num") Integer num, @Valid @RequestBody UpdateItemDTO itemDTO) {
 
 		// 수정 할 아이템 검색. 검색 된 아이템이 없다면 예외 발생
@@ -167,6 +171,7 @@ public class ItemController {
 
 	@PutMapping("/change/{num}")
 	@ApiOperation(value = "Item 상태 변경: mint, 판매 등록/중지/중단, 거래", protocols = "http")
+	@Transactional()
 	public ResponseEntity<PrintItemDTO> change(@PathVariable("num") Integer num, @Valid @RequestBody UpdateDetailItemDTO itemDTO) {
 
 		// 수정 할 아이템 검색. 검색 된 아이템이 없다면 예외 발생
