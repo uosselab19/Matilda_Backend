@@ -1,0 +1,34 @@
+stages:
+  - build
+  - test
+
+image: alpine:latest
+
+variables:
+  GREETING_MESSAGE: Hello
+
+build_a:
+  stage: build
+  script:
+    - echo "$GREETING_MESSAGE, GitLab CI!"
+    - echo "이 Job은 무언가를 빌드합니다."
+
+build_b:
+  stage: build
+  script:
+    - echo "이 Job은 다른 무언가를 빌드합니다."
+    - sleep 5
+
+test_a:
+  stage: test
+  script:
+    - echo "이 Job은 무언가를 테스트합니다."
+    - echo "빌드 단계의 모든 Job이 완료된 경우에만 실행됩니다."
+
+test_b:
+  stage: test
+  script:
+    - echo "이 Job은 다른 무언가를 테스트합니다."
+    - echo "이 Job도 빌드 단계의 모든 Job이 완료된 경우에만 실행됩니다."
+    - echo "test_a와 거의 동시에 시작됩니다."
+    - sleep 5
