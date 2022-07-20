@@ -25,13 +25,13 @@ public class PrintContractDTO {
 
 	private String sellerNickName;
 
-	private int buyerNum;
+	private Integer buyerNum;
 
 	private String buyerNickName;
 
 	private String stateCode;
 
-	private double price;
+	private Double price;
 
 	private Date createdAt;
 

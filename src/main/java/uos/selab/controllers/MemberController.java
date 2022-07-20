@@ -69,7 +69,7 @@ public class MemberController {
 	@ResponseStatus(value = HttpStatus.OK)
 	@ApiOperation(value = "신규 Member 생성", protocols = "http")
 	@Transactional()
-	public ResponseEntity<PrintMemberDTO> insert(@RequestBody InsertMemberDTO memberDTO) {
+	public ResponseEntity<PrintMemberDTO> insert(@RequestBody @Valid  InsertMemberDTO memberDTO) {
 		Member newMember = MemberMapper.INSTANCE.toEntity(memberDTO);
 
 		newMember.setCreatedAt(new Date());

@@ -20,8 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import uos.selab.domains.Category;
 import uos.selab.domains.Item;
 import uos.selab.domains.Item.ItemBuilder;
+import uos.selab.domains.Member;
 import uos.selab.dtos.InsertContractDTO;
 import uos.selab.dtos.InsertContractDTO.InsertContractDTOBuilder;
 import uos.selab.dtos.InsertItemDTO;
@@ -30,6 +32,7 @@ import uos.selab.dtos.PrintItemDTO;
 import uos.selab.dtos.SelectItemDTO;
 import uos.selab.dtos.UpdateDetailItemDTO;
 import uos.selab.dtos.UpdateItemDTO;
+import uos.selab.exceptions.DataFormatException;
 import uos.selab.exceptions.ResourceNotFoundException;
 import uos.selab.mappers.ItemMapper;
 import uos.selab.repositories.CategoryRepository;
@@ -52,7 +55,7 @@ public class ItemController {
 	@GetMapping()
 	@ResponseStatus(value = HttpStatus.OK)
 	@ApiOperation(value = "Item 리스트 검색", protocols = "http")
-	public ResponseEntity<List<PrintItemDTO>> findAll(SelectItemDTO itemDTO) {
+	public ResponseEntity<List<PrintItemDTO>> findAll(@Valid SelectItemDTO itemDTO) {
 
 		// 조건에 맞는 아이템 검색
 		List<Item> items = itemRepo.findAllByDTO(itemDTO);
@@ -69,7 +72,7 @@ public class ItemController {
 	@GetMapping("/count")
 	@ResponseStatus(value = HttpStatus.OK)
 	@ApiOperation(value = "Item 리스트 개수 확인", protocols = "http")
-	public ResponseEntity<Integer> countAll(SelectItemDTO itemDTO) {
+	public ResponseEntity<Integer> countAll(@Valid SelectItemDTO itemDTO) {
 
 		// 조건에 맞는 아이템 검색
 		List<Item> items = itemRepo.findAllByDTO(itemDTO);
@@ -109,9 +112,13 @@ public class ItemController {
 	@GetMapping("/category/{catCode}")
 	@ApiOperation(value = "특정 카테고리의 Item 조회", protocols = "http")
 	public ResponseEntity<List<PrintItemDTO>> findCategoryItem(@PathVariable("catCode") String catCode) {
-
-		// catCode를 기준으로 아이템 검색
-		List<Item> items = itemRepo.findByCategory(categoryRepo.getById(catCode));
+		
+		// catCode를 통해 category 검색, 잘못된 catCode가 들어오면 예외 발생
+		Category category = categoryRepo.findById(catCode)
+				.orElseThrow(() -> new DataFormatException("Wrong Category with catCode = " + catCode));
+		
+		// category를 기준으로 아이템 검색
+		List<Item> items = itemRepo.findByCategory(category);
 
 		// 검색 된 아이템이 없다면 예외 발생
 		if (items.isEmpty()) {
@@ -125,15 +132,23 @@ public class ItemController {
 	@PostMapping()
 	@ApiOperation(value = "신규 Item 추가", protocols = "http")
 	@Transactional()
-	public ResponseEntity<PrintItemDTO> insert(@RequestBody InsertItemDTO itemDTO) throws InterruptedException {
+	public ResponseEntity<PrintItemDTO> insert(@RequestBody @Valid InsertItemDTO itemDTO) {
 
 		// 아이템 이름으로 지정할 임의의 문자열로 현재 시간 사용
 		Date now = new Date();
-
+		
+		// memberNum을 통해 member 검색, 잘못된 memberNum이 들어오면 예외 발생
+		Member member = memberRepo.findById(itemDTO.getMemberNum())
+				.orElseThrow(() -> new DataFormatException("Wrong Member with memberNum = " + itemDTO.getMemberNum()));
+		
+		// catCode를 통해 category 검색, 잘못된 catCode가 들어오면 예외 발생
+		Category category = categoryRepo.findById(itemDTO.getCatCode())
+				.orElseThrow(() -> new DataFormatException("Wrong Category with catCode = " + itemDTO.getCatCode()));
+		
 		// itemDTO를 사용해 Item 객체 생성
 		ItemBuilder itemBuilder = Item.builder();
-		itemBuilder.member(memberRepo.getById(itemDTO.getMemberNum()))
-				.category(categoryRepo.getById(itemDTO.getCatCode())).title(now.toString()).imgUrl(itemDTO.getImgUrl())
+		itemBuilder.member(member)
+				.category(category).title(now.toString()).imgUrl(itemDTO.getImgUrl())
 				.objectUrl(itemDTO.getObjectUrl()).stateCode("CR");
 
 		// 생성한 아이템 저장

@@ -15,12 +15,12 @@ import lombok.Setter;
 @Builder
 public class UpdateItemDTO {
 
-	@Size(max = 45)
+	@Size(max = 45, message = "title의 최대 크기는 45입니다.")
 	private String title;
 
-	@Size(max = 300)
+	@Size(max = 300, message = "description의 최대 크기는 300입니다.")
 	private String description;
 
-	private double price;
+	private Double price;
 
 }

@@ -1,5 +1,7 @@
 package uos.selab.dtos;
 
+import javax.validation.constraints.Size;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,6 +17,7 @@ import uos.selab.enums.SortOrder;
 @Builder
 public class SelectItemDTO {
 
+	@Size(max = 45, message = "title의 최대 크기는 45입니다.")
 	private String title; // 키 값 1
 
 	private Double minPrice; // 키 값 2
@@ -23,8 +26,10 @@ public class SelectItemDTO {
 
 	private int memberNum; // 키 값 3
 
+	@Size(min = 2, max = 3, message = "catCode의 크기는 2에서 3 사이입니다.")
 	private String catCode; // 키 값 4
 
+	@Size(min = 2, max = 3, message = "stateCode의 크기는 2에서 3 사이입니다.")
 	private String stateCode; // 키 값 5
 
 	private SortOrder sortOrder; // 정렬순서

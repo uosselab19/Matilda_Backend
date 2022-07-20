@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +42,7 @@ public class ContractController {
 	@GetMapping()
 	@ResponseStatus(value = HttpStatus.OK)
 	@ApiOperation(value = "Contract 리스트 조회", protocols = "http")
-	public ResponseEntity<List<PrintContractDTO>> findAll(SelectContractDTO contractDTO) {
+	public ResponseEntity<List<PrintContractDTO>> findAll(@Valid SelectContractDTO contractDTO) {
 		List<Contract> contracts = contractRepo.findAllByDTO(contractDTO);
 
 		if (contracts.isEmpty()) {
@@ -49,11 +51,11 @@ public class ContractController {
 
 		return new ResponseEntity<>(toPrintDTO(contracts), HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/count")
 	@ResponseStatus(value = HttpStatus.OK)
 	@ApiOperation(value = "Contract 리스트 개수 확인", protocols = "http")
-	public ResponseEntity<Integer> countAll(SelectContractDTO contractDTO) {
+	public ResponseEntity<Integer> countAll(@Valid SelectContractDTO contractDTO) {
 		List<Contract> contracts = contractRepo.findAllByDTO(contractDTO);
 
 		return new ResponseEntity<>(contracts.size(), HttpStatus.OK);
@@ -77,18 +79,13 @@ public class ContractController {
 		Member buyer = contractDTO.getBuyerNum() != 0 ? memberRepo.getById(contractDTO.getBuyerNum()) : null;
 
 		ContractBuilder contractBuilder = Contract.builder();
-		contractBuilder.seller(seller)
-					   .buyer(buyer)
-					   .item(itemRepo.getById(contractDTO.getItemNum()))
-					   .stateCode(contractDTO.getStateCode())
-					   .createdAt(new Date());
-		if (contractDTO.getPrice() != 0)
-			contractBuilder.price(contractDTO.getPrice());
+		contractBuilder.seller(seller).buyer(buyer).item(itemRepo.getById(contractDTO.getItemNum()))
+				.stateCode(contractDTO.getStateCode()).createdAt(new Date()).price(contractDTO.getPrice());
 
 		Contract newContract = contractRepo.save(contractBuilder.build());
 
 		// 저장 및 결과 반환
-		return newContract; //new ResponseEntity<>(toPrintDTO(newContract), HttpStatus.OK)
+		return newContract; // new ResponseEntity<>(toPrintDTO(newContract), HttpStatus.OK)
 	}
 
 	// 단일 PrintContractDTO 생성 함수
@@ -100,9 +97,10 @@ public class ContractController {
 		printContract.setItemTitle(contract.getItem().getTitle());
 		printContract.setSellerNum(contract.getSeller().getMemberNum());
 		printContract.setSellerNickName(contract.getSeller().getNickname());
-		printContract.setBuyerNum(contract.getBuyer().getMemberNum());
-		printContract.setBuyerNickName(contract.getBuyer().getNickname());
-
+		if (contract.getBuyer() != null) {
+			printContract.setBuyerNum(contract.getBuyer().getMemberNum());
+			printContract.setBuyerNickName(contract.getBuyer().getNickname());
+		}
 		return printContract;
 	}
 
