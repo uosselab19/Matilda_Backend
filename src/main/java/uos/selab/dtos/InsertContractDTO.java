@@ -25,7 +25,7 @@ public class InsertContractDTO {
 
 	private String stateCode;
 
-	private double price;
+	private Double price;
 
 	// private Date createdAt;
 

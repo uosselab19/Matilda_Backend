@@ -68,6 +68,6 @@ public class Item {
 	private String stateCode;
 
 	@Column(nullable = true)
-	private double price;
+	private Double price;
 
 }

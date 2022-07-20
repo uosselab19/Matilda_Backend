@@ -53,7 +53,7 @@ public class Contract {
 	private String stateCode;
 
 	@Column(nullable = true)
-	private double price;
+	private Double price;
 
 	@Column(name = "created_at", nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
