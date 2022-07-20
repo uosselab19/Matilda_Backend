@@ -75,6 +75,7 @@ class ContractRepositoryImpl implements ContractRepositoryCustom {
 						queryBuilder.orderBy(contract.contractNum.desc());
 						break;
 				}
+				break;
 			// createdAt만 정렬
 			case CREATEDAT:
 				switch (sortOrder) {

@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import uos.selab.domains.Contract;
 import uos.selab.domains.Contract.ContractBuilder;
+import uos.selab.domains.Member;
 import uos.selab.dtos.InsertContractDTO;
 import uos.selab.dtos.PrintContractDTO;
 import uos.selab.dtos.SelectContractDTO;
@@ -30,6 +32,7 @@ import uos.selab.repositories.MemberRepository;
 @RequiredArgsConstructor
 @RestController()
 @RequestMapping("/contracts")
+@Transactional(readOnly = true)
 public class ContractController {
 
 	private final ContractRepository contractRepo;
@@ -39,7 +42,7 @@ public class ContractController {
 	@GetMapping()
 	@ResponseStatus(value = HttpStatus.OK)
 	@ApiOperation(value = "Contract 리스트 조회", protocols = "http")
-	public ResponseEntity<List<PrintContractDTO>> findAll(SelectContractDTO contractDTO) {
+	public ResponseEntity<List<PrintContractDTO>> findAll(@Valid SelectContractDTO contractDTO) {
 		List<Contract> contracts = contractRepo.findAllByDTO(contractDTO);
 
 		if (contracts.isEmpty()) {
@@ -48,11 +51,11 @@ public class ContractController {
 
 		return new ResponseEntity<>(toPrintDTO(contracts), HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/count")
 	@ResponseStatus(value = HttpStatus.OK)
 	@ApiOperation(value = "Contract 리스트 개수 확인", protocols = "http")
-	public ResponseEntity<Integer> countAll(SelectContractDTO contractDTO) {
+	public ResponseEntity<Integer> countAll(@Valid SelectContractDTO contractDTO) {
 		List<Contract> contracts = contractRepo.findAllByDTO(contractDTO);
 
 		return new ResponseEntity<>(contracts.size(), HttpStatus.OK);
@@ -68,19 +71,21 @@ public class ContractController {
 		return new ResponseEntity<>(toPrintDTO(contract), HttpStatus.OK);
 	}
 
-	@PostMapping()
-	@ApiOperation(value = "Contract 등록", protocols = "http")
-	public ResponseEntity<PrintContractDTO> insert(@RequestBody InsertContractDTO contractDTO) {
+//	@PostMapping()
+//	@ApiOperation(value = "Contract 등록", protocols = "http")
+	public Contract insert(InsertContractDTO contractDTO) {
+
+		Member seller = contractDTO.getSellerNum() != 0 ? memberRepo.getById(contractDTO.getSellerNum()) : null;
+		Member buyer = contractDTO.getBuyerNum() != 0 ? memberRepo.getById(contractDTO.getBuyerNum()) : null;
 
 		ContractBuilder contractBuilder = Contract.builder();
-		contractBuilder.seller(memberRepo.getById(contractDTO.getSellerNum()))
-				.buyer(memberRepo.getById(contractDTO.getBuyerNum())).item(itemRepo.getById(contractDTO.getItemNum()))
-				.stateCode(contractDTO.getStateCode()).price(contractDTO.getPrice()).createdAt(new Date());
+		contractBuilder.seller(seller).buyer(buyer).item(itemRepo.getById(contractDTO.getItemNum()))
+				.stateCode(contractDTO.getStateCode()).createdAt(new Date()).price(contractDTO.getPrice());
 
 		Contract newContract = contractRepo.save(contractBuilder.build());
 
 		// 저장 및 결과 반환
-		return new ResponseEntity<>(toPrintDTO(newContract), HttpStatus.OK);
+		return newContract; // new ResponseEntity<>(toPrintDTO(newContract), HttpStatus.OK)
 	}
 
 	// 단일 PrintContractDTO 생성 함수
@@ -92,9 +97,10 @@ public class ContractController {
 		printContract.setItemTitle(contract.getItem().getTitle());
 		printContract.setSellerNum(contract.getSeller().getMemberNum());
 		printContract.setSellerNickName(contract.getSeller().getNickname());
-		printContract.setBuyerNum(contract.getBuyer().getMemberNum());
-		printContract.setBuyerNickName(contract.getBuyer().getNickname());
-
+		if (contract.getBuyer() != null) {
+			printContract.setBuyerNum(contract.getBuyer().getMemberNum());
+			printContract.setBuyerNickName(contract.getBuyer().getNickname());
+		}
 		return printContract;
 	}
 

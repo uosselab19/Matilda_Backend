@@ -7,20 +7,20 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import uos.selab.enums.UpdateItemOption;
 
 @AllArgsConstructor()
 @NoArgsConstructor()
 @Setter
 @Getter
 @Builder
-public class UpdateItemDTO {
+public class UpdateDetailItemDTO {
 
-	@Size(max = 45, message = "title의 최대 크기는 45입니다.")
-	private String title;
-
-	@Size(max = 300, message = "description의 최대 크기는 300입니다.")
-	private String description;
-
-	private Double price;
-
+	private int buyerNum;
+	
+	@Size(max = 500, message = "nftAddress의 최대 크기는 500입니다.")
+	private String nftAddress;
+	
+	private UpdateItemOption option;
+	
 }

@@ -9,6 +9,7 @@ import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +35,7 @@ import uos.selab.repositories.MemberRepository;
 @RequiredArgsConstructor
 @RestController()
 @RequestMapping("/members")
+@Transactional(readOnly = true)
 public class MemberController {
 
 	private final MemberRepository memberRepo;
@@ -66,19 +68,21 @@ public class MemberController {
 	@PostMapping()
 	@ResponseStatus(value = HttpStatus.OK)
 	@ApiOperation(value = "신규 Member 생성", protocols = "http")
-	public ResponseEntity<PrintMemberDTO> insert(@RequestBody InsertMemberDTO memberDTO) {
+	@Transactional()
+	public ResponseEntity<PrintMemberDTO> insert(@RequestBody @Valid  InsertMemberDTO memberDTO) {
 		Member newMember = MemberMapper.INSTANCE.toEntity(memberDTO);
 
 		newMember.setCreatedAt(new Date());
 
 		newMember = memberRepo.save(newMember);
 
-		return new ResponseEntity<>(toPrintDTO(newMember), HttpStatus.OK);
+		return new ResponseEntity<>(toPrintDTO(newMember), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{num}")
 	@ResponseStatus(value = HttpStatus.OK)
 	@ApiOperation(value = "기존 Member 수정", protocols = "http")
+	@Transactional()
 	public ResponseEntity<PrintMemberDTO> update(@PathVariable("num") Integer num, @Valid @RequestBody UpdateMemberDTO memberDTO) {
 		Member member = memberRepo.findById(num)
 				.orElseThrow(() -> new ResourceNotFoundException("Not found Member with id = " + num));
