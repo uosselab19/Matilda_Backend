@@ -6,10 +6,12 @@ image: maven:3.8.6-openjdk-11
 
 variables:
   MVN_HOME: "/usr/local/apache-maven-3.8.6/bin"
+  APP: "/home/ec2-user/Matilda_Backend/src/main/resources"
 
 deploy:
   stage: deploy
   script:
+    - cp ${APP}/application.properties /src/main/resources
     - ${MVN_HOME}/mvn package
 
 run:
