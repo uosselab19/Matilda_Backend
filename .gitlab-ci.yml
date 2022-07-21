@@ -1,6 +1,5 @@
 stages:
-  - deploy
-  - run
+  - deploy_run
 
 image: maven:3.8.6-openjdk-11
 
@@ -8,14 +7,10 @@ variables:
   MVN_HOME: "/usr/local/apache-maven-3.8.6/bin"
   APP: "/home/ec2-user/Matilda_Backend/src/main/resources"
 
-deploy:
-  stage: deploy
+deploy_run:
+  stage: deploy_run
   script:
     - mkdir src/main/resources
     - cp ${APP}/application.properties ./src/main/resources
     - ${MVN_HOME}/mvn package
-
-run:
-  stage: run
-  script:
     - sudo nohup java -jar target/demo-1.0.0-DEPLOY.jar &
