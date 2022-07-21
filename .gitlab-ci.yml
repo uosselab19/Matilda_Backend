@@ -11,6 +11,7 @@ variables:
 deploy:
   stage: deploy
   script:
+    - mkdir /src/main/resources
     - cp ${APP}/application.properties /src/main/resources
     - ${MVN_HOME}/mvn package
 
