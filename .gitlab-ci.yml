@@ -1,15 +1,9 @@
 stages:
-  - deploy
-  - run
+  - build
 
 image: maven:3.8.6-openjdk-11
 
-deploy:
-  stage: deploy
+maven-build:
+  stage: build
   script:
-    - mvn package
-
-run:
-  stage: run
-  script:
-    - sudo nohup java -jar target/demo-1.0.0-DEPLOY.jar &
+    - ./mvnw clean compile
