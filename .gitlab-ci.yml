@@ -1,17 +1,25 @@
 stages:
-  - deploy_run
+  - deploy
+  - run
 
 image: maven:3.8.6-openjdk-11
+
+cache:
+  untracked: true
 
 variables:
   MVN_HOME: "/usr/local/apache-maven-3.8.6/bin"
   APP: "/home/ec2-user/Matilda_Backend/src/main/resources"
 
-deploy_run:
-  stage: deploy_run
+deploy:
+  stage: deploy
   script:
     - mkdir src/main/resources
     - cp ${APP}/application.properties ./src/main/resources
     - ${MVN_HOME}/mvn package
-    - sudo nohup java -jar target/demo-1.0.0-DEPLOY.jar &
-    - pwd
+
+
+run:
+  stage: run
+  script:
+    - sudo nohup java -jar target/demo-1.0.0-DEPLOY.jar >> nohup.out 2>&1 &
