@@ -14,3 +14,4 @@ deploy_run:
     - cp ${APP}/application.properties ./src/main/resources
     - ${MVN_HOME}/mvn package
     - sudo nohup java -jar target/demo-1.0.0-DEPLOY.jar &
+    - pwd
