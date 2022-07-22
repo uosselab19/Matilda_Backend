@@ -8,9 +8,9 @@ cache:
 deploy:
   stage: deploy
   script:
-    - ./shellscripts/deploy.sh
+    - sh ./shellscripts/deploy.sh
 
 run:
   stage: run
   script:
-    - ./shellscripts/run.sh
+    - sh ./shellscripts/run.sh
