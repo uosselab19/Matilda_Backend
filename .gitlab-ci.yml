@@ -2,14 +2,19 @@ stages:
   - deploy
   - run
 
-image: maven:3.8.6-openjdk-11
+cache:
+  untracked: true
 
 deploy:
+  only:
+    - main
   stage: deploy
   script:
-    - mvn package
+    - sh ./shellscripts/deploy.sh
 
 run:
+  only:
+    - main
   stage: run
   script:
-    - sudo nohup java -jar target/demo-1.0.0-DEPLOY.jar &
+    - sh ./shellscripts/run.sh
