@@ -6,11 +6,15 @@ cache:
   untracked: true
 
 deploy:
+  only:
+    - main
   stage: deploy
   script:
     - sh ./shellscripts/deploy.sh
 
 run:
+  only:
+    - main
   stage: run
   script:
     - sh ./shellscripts/run.sh
