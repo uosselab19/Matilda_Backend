@@ -1,6 +1,6 @@
 #!/bin/sh
 
-pid_search=$(netstat -nap | grep 8083 | awk '{print $7}')
+pid_search=$(netstat -nap | grep 8080 | awk '{print $7}')
 pid_value=${#pid_search}
 
 if [ $pid_value == 0 ]; then
