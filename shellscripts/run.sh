@@ -9,7 +9,7 @@ else
     echo "Start terminate process"
     pid_val=${pid_value%%'/'*}
     kill -9 $pid_val
-    if [ $? ==0 ]; then
+    if [ $? == 0 ]; then
         echo 'Terminate process success'
     else
         echo 'Terminate process fail'
