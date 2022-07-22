@@ -7,7 +7,7 @@ if [ $pid_value == 0 ]; then
     echo "Process already terminated."
 else
     echo "Start terminate process"
-    pid_val=${pid_value%%'/'*}
+    pid_val=${pid_search%%'/'*}
     kill -9 $pid_val
     if [ $? == 0 ]; then
         echo 'Terminate process success'
