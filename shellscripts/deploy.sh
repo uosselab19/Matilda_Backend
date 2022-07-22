@@ -1,7 +1,7 @@
 #!/bin/sh
 
-maven = "/usr/local/apache-maven-3.8.6/bin"
-resource_source = "/home/ec2-user/Matilda_Backend/src/main/resources"
+maven="/usr/local/apache-maven-3.8.6/bin"
+resource_source="/home/ec2-user/Matilda_Backend/src/main/resources"
 
 if [ -d ./src/main/resources ]; then
     echo "application.properties is ready"
