@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +41,7 @@ import uos.selab.repositories.CategoryRepository;
 import uos.selab.repositories.ItemRepository;
 import uos.selab.repositories.MemberRepository;
 
-@CrossOrigin()
+@CrossOrigin(origins = {"http://localhost:3000", "http://3.133.233.81:3000"})
 @RequiredArgsConstructor
 @RestController()
 @RequestMapping("/items")
@@ -203,6 +204,9 @@ public class ItemController {
 		switch (itemDTO.getOption()) {
 			// 초기 NFT 민팅
 			case MINT:
+				if (itemRepo.findByNftAddress(itemDTO.getNftAddress()).isPresent()) {
+					throw new DuplicateKeyException("Duplicated NFT Address");
+				}
 				item.setNftAddress(itemDTO.getNftAddress());
 				item.setStateCode("NOS");
 				break;
