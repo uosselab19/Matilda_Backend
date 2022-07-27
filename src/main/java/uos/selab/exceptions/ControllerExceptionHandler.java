@@ -2,6 +2,7 @@ package uos.selab.exceptions;
 
 import java.util.Date;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -65,4 +66,15 @@ public class ControllerExceptionHandler {
 
 		return new ResponseEntity<ErrorResponse>(message, HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler(DuplicateKeyException.class)
+	public ResponseEntity<ErrorResponse> handleDuplicateKeyException(DuplicateKeyException ex, WebRequest request) {
+		String url = ((ServletWebRequest) request).getRequest().getRequestURI().toString();
+		
+		ErrorResponse message = new ErrorResponse(HttpStatus.CONFLICT.value(), new Date(), url, ex.getMessage(),
+				request.getDescription(false));
+
+		return new ResponseEntity<ErrorResponse>(message, HttpStatus.CONFLICT);
+	}
+	
 }

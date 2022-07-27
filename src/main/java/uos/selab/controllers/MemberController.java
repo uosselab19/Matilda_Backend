@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,7 +72,11 @@ public class MemberController {
 	@ResponseStatus(value = HttpStatus.OK)
 	@ApiOperation(value = "신규 Member 생성", protocols = "http")
 	@Transactional()
-	public ResponseEntity<PrintMemberDTO> insert(@RequestBody @Valid  InsertMemberDTO memberDTO) {
+	public ResponseEntity<PrintMemberDTO> insert(@RequestBody @Valid InsertMemberDTO memberDTO) {
+		if (memberRepo.findById(memberDTO.getId()).isPresent()) {
+			throw new DuplicateKeyException("Duplicated ID");
+		}
+				
 		Member newMember = MemberMapper.INSTANCE.toEntity(memberDTO);
 
 		newMember.setCreatedAt(new Date());
