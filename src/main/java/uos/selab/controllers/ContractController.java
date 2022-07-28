@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +30,7 @@ import uos.selab.repositories.ContractRepository;
 import uos.selab.repositories.ItemRepository;
 import uos.selab.repositories.MemberRepository;
 
+@CrossOrigin(origins = {"http://localhost:3000", "http://3.133.233.81:3000"})
 @RequiredArgsConstructor
 @RestController()
 @RequestMapping("/contracts")
