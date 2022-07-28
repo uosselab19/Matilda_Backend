@@ -132,7 +132,7 @@ public class ItemController {
 		return new ResponseEntity<>(toPrintDTO(items), HttpStatus.OK);
 	}
 
-	@PostMapping()
+	@PostMapping("/auth")
 	@ApiOperation(value = "신규 Item 추가", protocols = "http")
 	@Transactional()
 	public ResponseEntity<PrintItemDTO> insert(@RequestBody @Valid InsertItemDTO itemDTO) {
@@ -168,7 +168,7 @@ public class ItemController {
 		return new ResponseEntity<>(toPrintDTO(newItem), HttpStatus.CREATED);
 	}
 
-	@PutMapping("/{num}")
+	@PutMapping("/auth/{num}")
 	@ApiOperation(value = "기존 Item 단순 수정: title, description, price", protocols = "http")
 	@Transactional()
 	public ResponseEntity<PrintItemDTO> update(@PathVariable("num") Integer num, @Valid @RequestBody UpdateItemDTO itemDTO) {
@@ -187,7 +187,7 @@ public class ItemController {
 		return new ResponseEntity<>(toPrintDTO(newItem), HttpStatus.OK);
 	}
 
-	@PutMapping("/change/{num}")
+	@PutMapping("/auth/change/{num}")
 	@ApiOperation(value = "Item 상태 변경: mint, 판매 등록/중지/중단, 거래", protocols = "http")
 	@Transactional()
 	public ResponseEntity<PrintItemDTO> change(@PathVariable("num") Integer num, @Valid @RequestBody UpdateDetailItemDTO itemDTO) {

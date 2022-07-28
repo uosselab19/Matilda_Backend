@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import uos.selab.domains.Member;
+import uos.selab.exceptions.ResourceNotFoundException;
 import uos.selab.repositories.MemberRepository;
 import uos.selab.utils.JwtTokenProvider;
 
@@ -21,7 +23,7 @@ import uos.selab.utils.JwtTokenProvider;
 @RequestMapping("/security")
 public class SecurityController {
 
-	// private final PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final MemberRepository memberRepo;
 
@@ -29,13 +31,11 @@ public class SecurityController {
 	@PostMapping("/login")
 	public String login(@RequestBody Map<String, String> user) {
 		Member member = memberRepo.findById(user.get("id"))
-				.orElseThrow(() -> new IllegalArgumentException("가입되지 않은 아이디입니다."));
-//        if (!passwordEncoder.matches(user.get("password"), member.getPassword())) {
-//            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
-//        }
-		if (!user.get("password").toString().equals(member.getPassword())) {
-			throw new IllegalArgumentException("잘못된 비밀번호입니다.");
-		}
+				.orElseThrow(() -> new ResourceNotFoundException("Not found Member with id = " + user.get("id")));
+
+        if (!passwordEncoder.matches(user.get("password"), member.getPassword())) {
+            throw new IllegalArgumentException("Wrong password");
+        }
 
 		List<String> roles = new ArrayList<>();
 		roles.add("ROLE_MEMBER");

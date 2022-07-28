@@ -19,7 +19,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import uos.selab.domains.CustomUserDetails;
 import uos.selab.domains.Member;
 
-// @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
 
@@ -42,7 +41,6 @@ public class JwtTokenProvider {
 
 		claims.put("num", member.getMemberNum());
 		claims.put("id", member.getId());
-		claims.put("nickname", member.getNickname());
 		claims.put("roles", roles); // 정보는 key / value 쌍으로 저장된다.
 
 		Date now = new Date();
