@@ -90,7 +90,7 @@ public class ItemController {
 
 		// 조건에 맞는 아이템 검색, 검색 된 아이템이 없으면 예외 발생
 		Item item = itemRepo.findById(num)
-				.orElseThrow(() -> new ResourceNotFoundException("Not found Item with id = " + num));
+				.orElseThrow(() -> new ResourceNotFoundException("Not found Item with ItemNum = " + num));
 
 		// printDTO 형식으로 반환
 		return new ResponseEntity<>(toPrintDetailDTO(item), HttpStatus.OK);
@@ -142,7 +142,7 @@ public class ItemController {
 		
 		// memberNum을 통해 member 검색, 잘못된 memberNum이 들어오면 예외 발생
 		Member member = memberRepo.findById(itemDTO.getMemberNum())
-				.orElseThrow(() -> new DataFormatException("Wrong Member with memberNum = " + itemDTO.getMemberNum()));
+				.orElseThrow(() -> new DataFormatException("Wrong Member with MemberNum = " + itemDTO.getMemberNum()));
 		
 		// catCode를 통해 category 검색, 잘못된 catCode가 들어오면 예외 발생
 		Category category = categoryRepo.findById(itemDTO.getCatCode())
@@ -175,7 +175,7 @@ public class ItemController {
 
 		// 수정 할 아이템 검색. 검색 된 아이템이 없다면 예외 발생
 		Item item = itemRepo.findById(num)
-				.orElseThrow(() -> new ResourceNotFoundException("Not found Item with id = " + num));
+				.orElseThrow(() -> new ResourceNotFoundException("Not found Item with ItemNum = " + num));
 
 		// ItemMapper를 사용해 item 객체의 내용 수정
 		ItemMapper.INSTANCE.updateFromDto(itemDTO, item);
@@ -194,7 +194,7 @@ public class ItemController {
 
 		// 수정 할 아이템 검색. 검색 된 아이템이 없다면 예외 발생
 		Item item = itemRepo.findById(num)
-				.orElseThrow(() -> new ResourceNotFoundException("Not found Item with id = " + num));
+				.orElseThrow(() -> new ResourceNotFoundException("Not found Item with itemNum = " + num));
 
 		// contract 작성 준비
 		InsertContractDTOBuilder insertContractBuilder = InsertContractDTO.builder();

@@ -63,7 +63,7 @@ public class MemberController {
 	@ApiOperation(value = "특정 Member 조회", protocols = "http")
 	public ResponseEntity<PrintMemberDTO> findOne(@PathVariable("num") Integer num) {
 		Member member = memberRepo.findById(num)
-				.orElseThrow(() -> new ResourceNotFoundException("Not found Member with id = " + num));
+				.orElseThrow(() -> new ResourceNotFoundException("Not found Member with MemberNum = " + num));
 
 		return new ResponseEntity<>(toPrintDTO(member), HttpStatus.OK);
 	}
@@ -92,7 +92,7 @@ public class MemberController {
 	@Transactional()
 	public ResponseEntity<PrintMemberDTO> update(@PathVariable("num") Integer num, @Valid @RequestBody UpdateMemberDTO memberDTO) {
 		Member member = memberRepo.findById(num)
-				.orElseThrow(() -> new ResourceNotFoundException("Not found Member with id = " + num));
+				.orElseThrow(() -> new ResourceNotFoundException("Not found Member with MemberNum = " + num));
 
 		MemberMapper.INSTANCE.updateFromDto(memberDTO, member);
 
