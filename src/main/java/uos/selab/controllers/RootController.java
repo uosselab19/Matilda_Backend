@@ -1,14 +1,13 @@
 package uos.selab.controllers;
 
-import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import uos.selab.domains.CustomUserDetails;
-
 @CrossOrigin(origins = {"http://localhost:3000", "http://3.133.233.81:3000"})
 @RestController("/")
+@Transactional(readOnly = true)
 public class RootController {
 
 	@GetMapping("/")
@@ -16,11 +15,4 @@ public class RootController {
 		return "Welcome!";
 	}
 
-	@GetMapping("/member/api")
-	public String firstMethod2(Authentication authentication) {
-		// Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-
-		return userDetails.getId() + "/" + userDetails.getNum();
-	}
 }

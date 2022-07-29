@@ -77,6 +77,9 @@ public class Member {
 
 	@Column(name = "wallet_address", nullable = true, length = 500)
 	private String walletAddress;
+	
+	@Column(name = "refresh_token", nullable = true, length = 300)
+	private String refreshToken;
 
 	@Column(name = "created_at", nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
