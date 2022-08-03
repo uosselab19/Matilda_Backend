@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +43,7 @@ import uos.selab.repositories.MemberRepository;
 public class MemberController {
 
 	private final MemberRepository memberRepo;
-	
+	private final PasswordEncoder passwordEncoder;
 	private Gson gson = new Gson();
 
 	@GetMapping()
@@ -63,7 +64,7 @@ public class MemberController {
 	@ApiOperation(value = "특정 Member 조회", protocols = "http")
 	public ResponseEntity<PrintMemberDTO> findOne(@PathVariable("num") Integer num) {
 		Member member = memberRepo.findById(num)
-				.orElseThrow(() -> new ResourceNotFoundException("Not found Member with id = " + num));
+				.orElseThrow(() -> new ResourceNotFoundException("Not found Member with MemberNum = " + num));
 
 		return new ResponseEntity<>(toPrintDTO(member), HttpStatus.OK);
 	}
@@ -78,7 +79,8 @@ public class MemberController {
 		}
 				
 		Member newMember = MemberMapper.INSTANCE.toEntity(memberDTO);
-
+		
+		newMember.setPassword(passwordEncoder.encode(newMember.getPassword()));
 		newMember.setCreatedAt(new Date());
 
 		newMember = memberRepo.save(newMember);
@@ -86,13 +88,13 @@ public class MemberController {
 		return new ResponseEntity<>(toPrintDTO(newMember), HttpStatus.CREATED);
 	}
 
-	@PutMapping("/{num}")
+	@PutMapping("/auth/{num}")
 	@ResponseStatus(value = HttpStatus.OK)
 	@ApiOperation(value = "기존 Member 수정", protocols = "http")
 	@Transactional()
 	public ResponseEntity<PrintMemberDTO> update(@PathVariable("num") Integer num, @Valid @RequestBody UpdateMemberDTO memberDTO) {
 		Member member = memberRepo.findById(num)
-				.orElseThrow(() -> new ResourceNotFoundException("Not found Member with id = " + num));
+				.orElseThrow(() -> new ResourceNotFoundException("Not found Member with MemberNum = " + num));
 
 		MemberMapper.INSTANCE.updateFromDto(memberDTO, member);
 

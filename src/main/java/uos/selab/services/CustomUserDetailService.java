@@ -18,7 +18,8 @@ public class CustomUserDetailService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String id) {
-		Member member = memberRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException(""));
+		Member member = memberRepo.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Not found Member with id = " + id));
 
 		CustomUserDetails user = CustomUserDetails.builder().id(member.getId()).password(member.getPassword()).build();
 
