@@ -105,7 +105,7 @@ public class JwtTokenProvider {
 		}
 	}
 	
-	// 토큰의 유효성 + 만료일자 + refreshToken의 휴효성 확인
+	// 토큰의 유효성 + 만료일자 + refreshToken의 유효성 확인
 	@Transactional(readOnly = true)
 	public boolean validateAccessToken(String jwtToken) {
 		try {
@@ -124,7 +124,7 @@ public class JwtTokenProvider {
 		}
 	}
 	
-	// 토큰의 유효성 + 만료일자만 초과한 토큰이면 return true
+	// 유효한 토큰이면서 시간만 만료되어야 true, 정상이거나 문제가 있으면 false
     public boolean validateTokenExceptExpiration(String jwtToken) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
