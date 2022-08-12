@@ -8,6 +8,8 @@ cache:
     - ./target
 
 deploy:
+  tags:
+    - main
   only:
     - main
   stage: deploy
@@ -15,6 +17,8 @@ deploy:
     - sh ./shellscripts/deploy.sh
 
 run:
+  tags:
+    - main
   only:
     - main
   stage: run
