@@ -139,7 +139,7 @@ public class SecurityController {
 	// 토큰의 유효성검사
 	@PostMapping("/validCheck")
 	@ResponseStatus(value = HttpStatus.OK)
-	@ApiOperation(value = "로그아웃", protocols = "http")
+	@ApiOperation(value = "토큰 유효성 검사", protocols = "http")
 	@Transactional()
 	public ResponseEntity<String> validCheck(@RequestHeader(value = "X-AUTH-TOKEN") String accessToken) {
 
