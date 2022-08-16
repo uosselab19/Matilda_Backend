@@ -80,7 +80,9 @@ public class ItemController {
 	@ResponseStatus(value = HttpStatus.OK)
 	@ApiOperation(value = "Item 리스트 개수 확인", protocols = "http")
 	public ResponseEntity<Integer> countAll(@Valid SelectItemDTO itemDTO) {
-
+		// count시에는 무한개의 take 사용
+		itemDTO.setTake(Integer.MAX_VALUE);
+		
 		// 조건에 맞는 아이템 검색
 		List<Item> items = itemRepo.findAllByDTO(itemDTO);
 

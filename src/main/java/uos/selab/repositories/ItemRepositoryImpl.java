@@ -145,9 +145,9 @@ class ItemRepositoryImpl implements ItemRepositoryCustom {
 
 		queryBuilder.offset(skip);
 
-		// take를 입력하지 않으면 12개 반환
+		// take를 입력하지 않으면 24개 반환
 		if (take <= 0)
-			queryBuilder.limit(12);
+			queryBuilder.limit(24);
 		else
 			queryBuilder.limit(take);
 
