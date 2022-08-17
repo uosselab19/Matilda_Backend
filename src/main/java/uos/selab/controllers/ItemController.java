@@ -225,8 +225,6 @@ public class ItemController {
 
 		PrintItemDTO printItem = ItemMapper.INSTANCE.toPrintDTO(item);
 
-		printItem.setMemberNum(item.getMember().getMemberNum());
-		printItem.setMemberNickName(item.getMember().getNickname());
 		printItem.setMemberThumbImgUrl(item.getMember().getThumbProfileImg());
 		printItem.setCatCode(item.getCategory().getCatCode());
 
