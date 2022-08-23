@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.util.StringUtils;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -31,6 +32,7 @@ class ContractRepositoryImpl implements ContractRepositoryCustom {
 		int sellerNum = contractDTO.getSellerNum(), buyerNum = contractDTO.getBuyerNum(), itemNum = contractDTO.getItemNum();
 		Double minPrice = contractDTO.getMinPrice(), maxPrice = contractDTO.getMaxPrice();
 		Date startDate = contractDTO.getStartDate(), endDate = contractDTO.getEndDate();
+		String transactionHash = contractDTO.getTransactionHash();
 
 		if (sellerNum != 0)
 			builder.and(contract.seller.memberNum.eq(sellerNum));
@@ -52,6 +54,9 @@ class ContractRepositoryImpl implements ContractRepositoryCustom {
 
 		if (endDate != null)
 			builder.and(contract.createdAt.loe(endDate));
+
+		if (!StringUtils.isNullOrEmpty(transactionHash))
+			builder.and(contract.transactionHash.eq(transactionHash));
 
 		queryBuilder.where(builder);
 

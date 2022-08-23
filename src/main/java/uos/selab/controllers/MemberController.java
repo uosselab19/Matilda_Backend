@@ -31,6 +31,7 @@ import uos.selab.domains.Member;
 import uos.selab.dtos.InsertMemberDTO;
 import uos.selab.dtos.PrintMemberDTO;
 import uos.selab.dtos.UpdateMemberDTO;
+import uos.selab.dtos.UpdateMemberKlaytnDTO;
 import uos.selab.exceptions.ResourceNotFoundException;
 import uos.selab.mappers.MemberMapper;
 import uos.selab.repositories.MemberRepository;
@@ -99,6 +100,21 @@ public class MemberController {
 		MemberMapper.INSTANCE.updateFromDto(memberDTO, member);
 
 		member.setPreset(gson.toJson(memberDTO.getPresetList()));
+
+		Member newMember = memberRepo.save(member);
+
+		return new ResponseEntity<>(toPrintDTO(newMember), HttpStatus.OK);
+	}
+	
+	@PutMapping("/auth/klaytn/{num}")
+	@ResponseStatus(value = HttpStatus.OK)
+	@ApiOperation(value = "Member의 Klaytn 정보 수정", protocols = "http")
+	@Transactional()
+	public ResponseEntity<PrintMemberDTO> updateKlaytn(@PathVariable("num") Integer num, @Valid @RequestBody UpdateMemberKlaytnDTO memberDTO) {
+		Member member = memberRepo.findById(num)
+				.orElseThrow(() -> new ResourceNotFoundException("Not found Member with MemberNum = " + num));
+
+		MemberMapper.INSTANCE.updateKlaytnFromDto(memberDTO, member);
 
 		Member newMember = memberRepo.save(member);
 

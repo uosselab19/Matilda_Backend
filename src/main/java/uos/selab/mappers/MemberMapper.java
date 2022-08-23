@@ -10,6 +10,7 @@ import uos.selab.domains.Member;
 import uos.selab.dtos.InsertMemberDTO;
 import uos.selab.dtos.PrintMemberDTO;
 import uos.selab.dtos.UpdateMemberDTO;
+import uos.selab.dtos.UpdateMemberKlaytnDTO;
 
 @Mapper(componentModel = "spring")
 public interface MemberMapper {
@@ -24,5 +25,8 @@ public interface MemberMapper {
 
 	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 	void updateFromDto(UpdateMemberDTO memberDTO, @MappingTarget Member entity);
+
+	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+	void updateKlaytnFromDto(UpdateMemberKlaytnDTO memberDTO, @MappingTarget Member entity);
 
 }

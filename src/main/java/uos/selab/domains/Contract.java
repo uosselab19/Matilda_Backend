@@ -52,6 +52,9 @@ public class Contract {
 	@Column(name = "state_code", nullable = false, length = 3)
 	private String stateCode;
 
+	@Column(name = "tx_hash", nullable = true, length = 100)
+	private String transactionHash;
+
 	@Column(nullable = true)
 	private Double price;
 

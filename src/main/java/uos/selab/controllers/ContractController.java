@@ -58,6 +58,9 @@ public class ContractController {
 	@ResponseStatus(value = HttpStatus.OK)
 	@ApiOperation(value = "Contract 리스트 개수 확인", protocols = "http")
 	public ResponseEntity<Integer> countAll(@Valid SelectContractDTO contractDTO) {
+		// count시에는 무한개의 take 사용
+		contractDTO.setTake(Integer.MAX_VALUE);
+
 		List<Contract> contracts = contractRepo.findAllByDTO(contractDTO);
 
 		return new ResponseEntity<>(contracts.size(), HttpStatus.OK);

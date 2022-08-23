@@ -102,41 +102,6 @@ public class ItemController {
 		return new ResponseEntity<>(toPrintDetailDTO(item), HttpStatus.OK);
 	}
 
-	@GetMapping("/user/{num}")
-	@ApiOperation(value = "특정 사용자의 Item 조회", protocols = "http")
-	public ResponseEntity<List<PrintItemDTO>> findUserItem(@PathVariable("num") Integer num) {
-
-		// mumberNum을 통해 아이템 검색
-		List<Item> items = itemRepo.findByMember(memberRepo.getById(num));
-
-		// 검색 된 아이템이 없으면 예외 발생
-		if (items.isEmpty()) {
-			throw new ResourceNotFoundException("Not found Items");
-		}
-
-		// printDTO 형식으로 반환
-		return new ResponseEntity<>(toPrintDTO(items), HttpStatus.OK);
-	}
-
-	@GetMapping("/category/{catCode}")
-	@ApiOperation(value = "특정 카테고리의 Item 조회", protocols = "http")
-	public ResponseEntity<List<PrintItemDTO>> findCategoryItem(@PathVariable("catCode") String catCode) {
-
-		// catCode를 통해 category 검색, 잘못된 catCode가 들어오면 예외 발생
-		Category category = categoryRepo.findById(catCode)
-				.orElseThrow(() -> new DataFormatException("Wrong Category with catCode = " + catCode));
-
-		// category를 기준으로 아이템 검색
-		List<Item> items = itemRepo.findByCategory(category);
-
-		// 검색 된 아이템이 없다면 예외 발생
-		if (items.isEmpty()) {
-			throw new ResourceNotFoundException("Not found Items");
-		}
-
-		// printDTO 형식으로 반환
-		return new ResponseEntity<>(toPrintDTO(items), HttpStatus.OK);
-	}
 
 	@PostMapping("/new")
 	@ApiOperation(value = "신규 Item 추가", protocols = "http")
@@ -260,8 +225,6 @@ public class ItemController {
 
 		PrintItemDTO printItem = ItemMapper.INSTANCE.toPrintDTO(item);
 
-		printItem.setMemberNum(item.getMember().getMemberNum());
-		printItem.setMemberNickName(item.getMember().getNickname());
 		printItem.setMemberThumbImgUrl(item.getMember().getThumbProfileImg());
 		printItem.setCatCode(item.getCategory().getCatCode());
 

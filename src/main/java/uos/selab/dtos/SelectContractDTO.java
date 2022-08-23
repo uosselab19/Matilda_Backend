@@ -39,6 +39,8 @@ public class SelectContractDTO {
 
 	private ContractSortKey sortKey;
 
+	private String transactionHash;
+
 	private int skip;
 
 	private int take;

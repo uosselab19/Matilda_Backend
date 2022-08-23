@@ -15,10 +15,6 @@ public class PrintItemDTO {
 
 	private int itemNum;
 
-	private int memberNum;
-
-	private String memberNickName;
-
 	private String memberThumbImgUrl;
 
 	private String catCode;
