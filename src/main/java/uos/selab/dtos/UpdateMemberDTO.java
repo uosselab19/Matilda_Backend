@@ -39,7 +39,4 @@ public class UpdateMemberDTO {
 	
 	private ArrayList<HashMap<String, Integer>> presetList;
 
-	@Size(max = 500, message = "walletAddress의 최대 크기는 500입니다.")
-	private String walletAddress;
-
 }

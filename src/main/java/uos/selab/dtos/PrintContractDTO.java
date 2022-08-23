@@ -33,6 +33,8 @@ public class PrintContractDTO {
 
 	private Double price;
 
+	private String transactionHash;
+
 	private Date createdAt;
 
 }

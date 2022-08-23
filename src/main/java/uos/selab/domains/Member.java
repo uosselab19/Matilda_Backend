@@ -75,9 +75,12 @@ public class Member {
 	@Column(name = "preset", nullable = true, columnDefinition = "json")
 	private String preset; 
 
-	@Column(name = "wallet_address", nullable = true, length = 500)
+	@Column(name = "wallet_address", nullable = true, length = 100)
 	private String walletAddress;
-	
+
+	@Column(name = "wallet_private_key", nullable = true, length = 100)
+	private String walletPrivateKey;
+
 	@Column(name = "refresh_token", nullable = true, length = 300)
 	private String refreshToken;
 

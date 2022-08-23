@@ -81,13 +81,16 @@ public class SecurityController {
 			@ApiImplicitParam(name = "REFRESH-TOKEN", value = "refresh-token", required = true, dataType = "String", paramType = "header") })
 	@Transactional()
 	public ResponseEntity<PrintLoginDTO> refreshToken(@RequestHeader(value = "X-AUTH-TOKEN") String accessToken,
-			@RequestHeader(value = "REFRESH-TOKEN") String refreshToken) {
+			@RequestHeader(value = "REFRESH-TOKEN") String refreshToken, @RequestBody String ignore) {
 
 		// accessToken이 만료되지 않았거나 문제가 있는 token이라면 예외 발생
 		if (!jwtTokenProvider.validateTokenExceptExpiration(accessToken))
 			// accessToken이 만료되지 않은 정상 토큰이라면 해당 내용을 알림
-			if (jwtTokenProvider.validateAccessToken(accessToken))
+			if (jwtTokenProvider.validateAccessToken(accessToken)) {
+				// ignore의 값이 yes라면 accessToken의 만료 여부를 무시하고 재발급
+				if (ignore.equals("yes")) ;
 				throw new AccessDeniedException("The accessToken has not yet expired");
+			}
 			// accessToken에 문제가 있는 경우라면 해당 내용을 알림
 			else
 				throw new ForbiddenException("The accessToken is not valid");
