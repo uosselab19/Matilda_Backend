@@ -101,6 +101,21 @@ public class ItemController {
 		// printDTO 형식으로 반환
 		return new ResponseEntity<>(toPrintDetailDTO(item), HttpStatus.OK);
 	}
+	
+	@GetMapping("/auth/objUrl/{num}")
+	@CrossOrigin(origins = { "http://localhost:8000", "http://3.133.233.81:8000", "https://localhost:8000",
+		"https://3.133.233.81:8000", "http://localhost:8100", "http://3.133.233.81:8100", "https://localhost:8100",
+		"https://3.133.233.81:8100" })
+	@ApiOperation(value = "특정 Item의 objectURL 조회", protocols = "http")
+	public ResponseEntity<String> findObjectUrl(@PathVariable("num") Integer num) {
+
+		// 조건에 맞는 아이템 검색, 검색 된 아이템이 없으면 예외 발생
+		Item item = itemRepo.findById(num)
+				.orElseThrow(() -> new ResourceNotFoundException("Not found Item with ItemNum = " + num));
+
+		// ObjectUrl만 반환
+		return new ResponseEntity<>(item.getObjectUrl(), HttpStatus.OK);
+	}
 
 
 	@PostMapping("/new")
