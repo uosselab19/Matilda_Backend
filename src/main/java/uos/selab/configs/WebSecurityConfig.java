@@ -47,6 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/items/auth/**").hasRole("MEMBER")
 			.antMatchers("/members/auth/**").hasRole("MEMBER")
 			.antMatchers("/security/auth/**").hasRole("MEMBER")
+			.antMatchers("/objects/auth/**").hasRole("MEMBER")
 			.anyRequest().permitAll() // 그외 나머지 요청은 누구나 접근 가능
 			// JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣는다
 			.and().addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
