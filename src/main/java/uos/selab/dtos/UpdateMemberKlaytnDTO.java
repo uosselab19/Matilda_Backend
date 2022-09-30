@@ -15,10 +15,10 @@ import lombok.Setter;
 @Builder
 public class UpdateMemberKlaytnDTO {
 
-	@Size(max = 100, message = "walletAddress의 최대 크기는 500입니다.")
-	private String walletAddress;
+    @Size(max = 100, message = "walletAddress의 최대 크기는 100입니다.")
+    private String walletAddress;
 
-	@Size(max = 100, message = "walletPrivateKey의 최대 크기는 100입니다.")
-	private String walletPrivateKey;
+    @Size(max = 100, message = "walletPrivateKey의 최대 크기는 100입니다.")
+    private String walletPrivateKey;
 
 }

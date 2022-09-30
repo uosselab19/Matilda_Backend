@@ -14,16 +14,16 @@ import uos.selab.repositories.MemberRepository;
 @Service
 public class CustomUserDetailService implements UserDetailsService {
 
-	private final MemberRepository memberRepo;
+    private final MemberRepository memberRepo;
 
-	@Override
-	public UserDetails loadUserByUsername(String id) {
-		Member member = memberRepo.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Not found Member with id = " + id));
+    @Override
+    public UserDetails loadUserByUsername(String id) {
+        Member member = memberRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found Member with id = " + id));
 
-		CustomUserDetails user = CustomUserDetails.builder().id(member.getId()).password(member.getPassword()).build();
+        CustomUserDetails user = CustomUserDetails.builder().id(member.getId()).password(member.getPassword()).build();
 
-		return user;
-	}
+        return user;
+    }
 
 }

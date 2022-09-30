@@ -10,6 +10,6 @@ import uos.selab.domains.Member;
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Integer> {
 
-	public Optional<Member> findById(String id);
+    public Optional<Member> findById(String id);
 
 }

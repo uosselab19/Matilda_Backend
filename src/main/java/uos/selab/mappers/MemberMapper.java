@@ -15,18 +15,18 @@ import uos.selab.dtos.UpdateMemberKlaytnDTO;
 @Mapper(componentModel = "spring")
 public interface MemberMapper {
 
-	MemberMapper INSTANCE = Mappers.getMapper(MemberMapper.class);
+    MemberMapper INSTANCE = Mappers.getMapper(MemberMapper.class);
 
-	Member toEntity(InsertMemberDTO memberDTO);
+    Member toEntity(InsertMemberDTO memberDTO);
 
-	InsertMemberDTO toDTO(Member member);
+    InsertMemberDTO toDTO(Member member);
 
-	PrintMemberDTO toPrintDTO(Member member);
+    PrintMemberDTO toPrintDTO(Member member);
 
-	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-	void updateFromDto(UpdateMemberDTO memberDTO, @MappingTarget Member entity);
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateFromDto(UpdateMemberDTO memberDTO, @MappingTarget Member entity);
 
-	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-	void updateKlaytnFromDto(UpdateMemberKlaytnDTO memberDTO, @MappingTarget Member entity);
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateKlaytnFromDto(UpdateMemberKlaytnDTO memberDTO, @MappingTarget Member entity);
 
 }

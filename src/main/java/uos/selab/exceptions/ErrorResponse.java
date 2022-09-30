@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ErrorResponse {
 
-	private int statusCode;
-	private Date timestamp;
-	private String url;
-	private String message;
-	private String description;
+    private int statusCode;
+    private Date timestamp;
+    private String url;
+    private String message;
+    private String description;
 
 }

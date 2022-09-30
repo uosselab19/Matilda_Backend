@@ -17,24 +17,24 @@ import lombok.Setter;
 @Builder
 public class PrintMemberDTO {
 
-	private int memberNum;
+    private int memberNum;
 
-	private String id;
+    private String id;
 
-	private String nickname;
+    private String nickname;
 
-	private String email;
+    private String email;
 
-	private String description;
+    private String description;
 
-	private String profileImg;
+    private String profileImg;
 
-	private String thumbProfileImg;
+    private String thumbProfileImg;
 
-	private ArrayList<HashMap<String, Integer>> presetList;
+    private ArrayList<HashMap<String, Integer>> presetList;
 
-	private String walletAddress;
+    private String walletAddress;
 
-	private Date createdAt;
+    private Date createdAt;
 
 }

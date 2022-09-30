@@ -10,6 +10,6 @@ import uos.selab.domains.Item;
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Integer>, ItemRepositoryCustom {
 
-	public Optional<Item> findByNftAddress(String nftAddress);
+    public Optional<Item> findByTokenId(int tokenId);
 
 }

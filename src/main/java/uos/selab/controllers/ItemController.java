@@ -28,8 +28,8 @@ import uos.selab.domains.Category;
 import uos.selab.domains.Item;
 import uos.selab.domains.Item.ItemBuilder;
 import uos.selab.domains.Member;
-import uos.selab.dtos.InsertContractDTO;
-import uos.selab.dtos.InsertContractDTO.InsertContractDTOBuilder;
+import uos.selab.dtos.InsertHistoryDTO;
+import uos.selab.dtos.InsertHistoryDTO.InsertHistoryDTOBuilder;
 import uos.selab.dtos.InsertItemDTO;
 import uos.selab.dtos.PrintDetailItemDTO;
 import uos.selab.dtos.PrintItemDTO;
@@ -44,212 +44,219 @@ import uos.selab.repositories.ItemRepository;
 import uos.selab.repositories.MemberRepository;
 
 @CrossOrigin(origins = { "http://localhost:3000", "http://3.133.233.81:3000", "http://localhost:8000",
-		"https://3.133.233.81:8000", "https://localhost:3000", "https://3.133.233.81:3000", "https://localhost:8000",
-		"https://3.133.233.81:8000" })
+        "http://3.133.233.81:8000", "http://3.133.233.81:8100" })
 @RequiredArgsConstructor
 @RestController()
 @RequestMapping("/items")
 @Transactional(readOnly = true)
 public class ItemController {
 
-	// Repository와 통신하는 클래스
-	private final ItemRepository itemRepo;
-	private final MemberRepository memberRepo;
-	private final CategoryRepository categoryRepo;
+    // Repository와 통신하는 클래스
+    private final ItemRepository itemRepo;
+    private final MemberRepository memberRepo;
+    private final CategoryRepository categoryRepo;
 
-	private final ContractController contractController;
+    private final HistoryController historyController;
 
-	@GetMapping()
-	@ResponseStatus(value = HttpStatus.OK)
-	@ApiOperation(value = "Item 리스트 검색", protocols = "http")
-	public ResponseEntity<List<PrintItemDTO>> findAll(@Valid SelectItemDTO itemDTO) {
+    @GetMapping()
+    @ResponseStatus(value = HttpStatus.OK)
+    @ApiOperation(value = "Item 리스트 검색", protocols = "http")
+    public ResponseEntity<List<PrintItemDTO>> findAll(@Valid SelectItemDTO itemDTO) {
 
-		// 조건에 맞는 아이템 검색
-		List<Item> items = itemRepo.findAllByDTO(itemDTO);
+        // 조건에 맞는 아이템 검색
+        List<Item> items = itemRepo.findAllByDTO(itemDTO);
 
-		// 검색 된 아이템이 없으면 예외 발생
-		if (items.isEmpty()) {
-			throw new ResourceNotFoundException("Not found Items");
-		}
+        // 검색 된 아이템이 없으면 예외 발생
+        if (items.isEmpty()) {
+            throw new ResourceNotFoundException("Not found Items");
+        }
 
-		// printDTO 형식으로 반환
-		return new ResponseEntity<>(toPrintDTO(items), HttpStatus.OK);
-	}
+        // printDTO 형식으로 반환
+        return new ResponseEntity<>(toPrintDTO(items), HttpStatus.OK);
+    }
 
-	@GetMapping("/count")
-	@ResponseStatus(value = HttpStatus.OK)
-	@ApiOperation(value = "Item 리스트 개수 확인", protocols = "http")
-	public ResponseEntity<Integer> countAll(@Valid SelectItemDTO itemDTO) {
-		// count시에는 무한개의 take 사용
-		itemDTO.setTake(Integer.MAX_VALUE);
-		
-		// 조건에 맞는 아이템 검색
-		List<Item> items = itemRepo.findAllByDTO(itemDTO);
+    @GetMapping("/count")
+    @ResponseStatus(value = HttpStatus.OK)
+    @ApiOperation(value = "Item 리스트 개수 확인", protocols = "http")
+    public ResponseEntity<Integer> countAll(@Valid SelectItemDTO itemDTO) {
+        // count시에는 무한개의 take 사용
+        itemDTO.setTake(Integer.MAX_VALUE);
 
-		// 개수만 출력
-		return new ResponseEntity<>(items.size(), HttpStatus.OK);
-	}
+        // 조건에 맞는 아이템 검색
+        List<Item> items = itemRepo.findAllByDTO(itemDTO);
 
-	@GetMapping("/{num}")
-	@ApiOperation(value = "특정 Item 조회", protocols = "http")
-	public ResponseEntity<PrintDetailItemDTO> findOne(@PathVariable("num") Integer num) {
+        // 개수만 출력
+        return new ResponseEntity<>(items.size(), HttpStatus.OK);
+    }
 
-		// 조건에 맞는 아이템 검색, 검색 된 아이템이 없으면 예외 발생
-		Item item = itemRepo.findById(num)
-				.orElseThrow(() -> new ResourceNotFoundException("Not found Item with ItemNum = " + num));
+    @GetMapping("/{num}")
+    @ApiOperation(value = "특정 Item 조회", protocols = "http")
+    public ResponseEntity<PrintDetailItemDTO> findOne(@PathVariable("num") Integer num) {
 
-		// printDTO 형식으로 반환
-		return new ResponseEntity<>(toPrintDetailDTO(item), HttpStatus.OK);
-	}
-	@PostMapping("/new")
-	@ApiOperation(value = "신규 Item 추가", protocols = "http")
-	@Transactional()
-	public ResponseEntity<PrintItemDTO> insert(@RequestBody @Valid InsertItemDTO itemDTO) {
+        // 조건에 맞는 아이템 검색, 검색 된 아이템이 없으면 예외 발생
+        Item item = itemRepo.findById(num)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found Item with ItemNum = " + num));
 
-		// 아이템 이름이 없다면 현재 시간 사용
-		if (StringUtils.isNullOrEmpty(itemDTO.getTitle())) {
-			Date now = new Date();
-			itemDTO.setTitle(now.toString());
-		}
+        // printDTO 형식으로 반환
+        return new ResponseEntity<>(toPrintDetailDTO(item), HttpStatus.OK);
+    }
 
-		// memberNum을 통해 member 검색, 잘못된 memberNum이 들어오면 예외 발생
-		Member member = memberRepo.findById(itemDTO.getMemberNum())
-				.orElseThrow(() -> new DataFormatException("Wrong Member with MemberNum = " + itemDTO.getMemberNum()));
+    @PostMapping("/new")
+    @ApiOperation(value = "신규 Item 추가", protocols = "http")
+    @Transactional()
+    public ResponseEntity<PrintDetailItemDTO> insert(@RequestBody @Valid InsertItemDTO itemDTO) {
 
-		// catCode를 통해 category 검색, 잘못된 catCode가 들어오면 예외 발생
-		Category category = categoryRepo.findById(itemDTO.getCatCode())
-				.orElseThrow(() -> new DataFormatException("Wrong Category with catCode = " + itemDTO.getCatCode()));
+        // 아이템 이름이 없다면 현재 시간 사용
+        if (StringUtils.isNullOrEmpty(itemDTO.getTitle())) {
+            Date now = new Date();
+            itemDTO.setTitle(now.toString());
+        }
 
-		// itemDTO를 사용해 Item 객체 생성
-		ItemBuilder itemBuilder = Item.builder();
-		itemBuilder.member(member).category(category).title(itemDTO.getTitle()).imgUrl(itemDTO.getImgUrl())
-				.objectUrl(itemDTO.getObjectUrl()).stateCode("CR");
+        // memberNum을 통해 member 검색, 잘못된 memberNum이 들어오면 예외 발생
+        Member member = memberRepo.findById(itemDTO.getMemberNum())
+                .orElseThrow(() -> new DataFormatException("Wrong Member with MemberNum = " + itemDTO.getMemberNum()));
 
-		// 생성한 아이템 저장
-		Item newItem = itemRepo.save(itemBuilder.build());
+        // catCode를 통해 category 검색, 잘못된 catCode가 들어오면 예외 발생
+        Category category = categoryRepo.findById(itemDTO.getCatCode())
+                .orElseThrow(() -> new DataFormatException("Wrong Category with catCode = " + itemDTO.getCatCode()));
 
-		// 아이템 생성 컨트랙트 생성
-		InsertContractDTOBuilder insertContractBuilder = InsertContractDTO.builder();
-		insertContractBuilder.itemNum(newItem.getItemNum()).sellerNum(newItem.getMember().getMemberNum())
-				.stateCode(newItem.getStateCode());
-		contractController.insert(insertContractBuilder.build());
+        // itemDTO를 사용해 Item 객체 생성
+        ItemBuilder itemBuilder = Item.builder();
+        itemBuilder.member(member).category(category).title(itemDTO.getTitle()).imgUrl(itemDTO.getImgUrl())
+                .objectUrl(itemDTO.getObjectUrl()).stateCode("CR");
 
-		// printDTO 형식으로 반환
-		return new ResponseEntity<>(toPrintDTO(newItem), HttpStatus.CREATED);
-	}
+        // 생성한 아이템 저장
+        Item newItem = itemRepo.save(itemBuilder.build());
 
-	@PutMapping("/auth/{num}")
-	@ApiOperation(value = "기존 Item 단순 수정: title, description, price", protocols = "http")
-	@Transactional()
-	public ResponseEntity<PrintItemDTO> update(@PathVariable("num") Integer num, @Valid @RequestBody UpdateItemDTO itemDTO) {
+        // 아이템 생성 컨트랙트 생성
+        InsertHistoryDTOBuilder insertHistoryBuilder = InsertHistoryDTO.builder();
+        insertHistoryBuilder.itemNum(newItem.getItemNum()).sellerNum(newItem.getMember().getMemberNum())
+                .stateCode(newItem.getStateCode());
+        historyController.insert(insertHistoryBuilder.build());
 
-		// 수정 할 아이템 검색. 검색 된 아이템이 없다면 예외 발생
-		Item item = itemRepo.findById(num)
-				.orElseThrow(() -> new ResourceNotFoundException("Not found Item with ItemNum = " + num));
+        // printDTO 형식으로 반환
+        return new ResponseEntity<>(toPrintDetailDTO(newItem), HttpStatus.CREATED);
+    }
 
-		// ItemMapper를 사용해 item 객체의 내용 수정
-		ItemMapper.INSTANCE.updateFromDto(itemDTO, item);
+    @PutMapping("/auth/{num}")
+    @ApiOperation(value = "기존 Item 단순 수정: title, description", protocols = "http")
+    @Transactional()
+    public ResponseEntity<PrintDetailItemDTO> update(@PathVariable("num") Integer num,
+            @Valid @RequestBody UpdateItemDTO itemDTO) {
 
-		// 수정사항 DB에 저장
-		Item newItem = itemRepo.save(item);
+        // 수정 할 아이템 검색. 검색 된 아이템이 없다면 예외 발생
+        Item item = itemRepo.findById(num)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found Item with ItemNum = " + num));
 
-		// printDTO 형식으로 반환
-		return new ResponseEntity<>(toPrintDTO(newItem), HttpStatus.OK);
-	}
+        // ItemMapper를 사용해 item 객체의 내용 수정
+        ItemMapper.INSTANCE.updateFromDto(itemDTO, item);
 
-	@PutMapping("/auth/change/{num}")
-	@ApiOperation(value = "Item 상태 변경: mint, 판매 등록/중지/중단, 거래", protocols = "http")
-	@Transactional()
-	public ResponseEntity<PrintItemDTO> change(@PathVariable("num") Integer num, @Valid @RequestBody UpdateDetailItemDTO itemDTO) {
+        // 수정사항 DB에 저장
+        Item newItem = itemRepo.save(item);
 
-		// 수정 할 아이템 검색. 검색 된 아이템이 없다면 예외 발생
-		Item item = itemRepo.findById(num)
-				.orElseThrow(() -> new ResourceNotFoundException("Not found Item with itemNum = " + num));
+        // printDTO 형식으로 반환
+        return new ResponseEntity<>(toPrintDetailDTO(newItem), HttpStatus.OK);
+    }
 
-		// contract 작성 준비
-		InsertContractDTOBuilder insertContractBuilder = InsertContractDTO.builder();
-		insertContractBuilder.itemNum(item.getItemNum());
+    @PutMapping("/auth/change/{num}")
+    @ApiOperation(value = "Item 상태 변경: mint, 판매 등록/중지/중단, 거래", protocols = "http")
+    @Transactional()
+    public ResponseEntity<PrintDetailItemDTO> change(@PathVariable("num") Integer num,
+            @Valid @RequestBody UpdateDetailItemDTO itemDTO) {
 
-		// option별 명령 수행
-		switch (itemDTO.getOption()) {
-			// 초기 NFT 민팅
-			case MINT:
-				if (itemRepo.findByNftAddress(itemDTO.getNftAddress()).isPresent()) {
-					throw new DuplicateKeyException("Duplicated NFT Address");
-				}
-				item.setNftAddress(itemDTO.getNftAddress());
-				item.setStateCode("NOS");
-				break;
-			// 판매 등록
-			case STATE_OS:
-				item.setStateCode("OS");
-				break;
-			// 판매 중지
-			case STATE_NOS:
-				item.setStateCode("NOS");
-				break;
-			// 거래 체결
-			case TRADE:
-				// 거래 완료 기록
-				insertContractBuilder.sellerNum(item.getMember().getMemberNum()).buyerNum(itemDTO.getBuyerNum())
-						.stateCode("TR").price(item.getPrice());
-				contractController.insert(insertContractBuilder.build());
+        // 수정 할 아이템 검색. 검색 된 아이템이 없다면 예외 발생
+        Item item = itemRepo.findById(num)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found Item with itemNum = " + num));
 
-				// 소유자 변경 및 판매 중지 상태로 변경
-				item.setMember(memberRepo.getById(itemDTO.getBuyerNum()));
-				item.setStateCode("NOS");
+        // history 작성 준비
+        InsertHistoryDTOBuilder insertHistoryBuilder = InsertHistoryDTO.builder();
+        insertHistoryBuilder.itemNum(item.getItemNum());
 
-				insertContractBuilder = InsertContractDTO.builder();
-				insertContractBuilder.itemNum(item.getItemNum());
-				break;
-			// 판매 중단
-			case STOP:
-				item.setStateCode("ST");
-				break;
-		}
+        // option별 명령 수행
+        switch (itemDTO.getOption()) {
+            // 초기 NFT 민팅
+            case MINT:
+                if (itemRepo.findByTokenId(itemDTO.getTokenId()).isPresent()) {
+                    throw new DuplicateKeyException("Duplicated Token ID");
+                }
+                item.setTokenId(itemDTO.getTokenId());
+                item.setTokenUri(itemDTO.getTokenUri());
+                item.setStateCode("NOS");
+                break;
+            // 판매 등록
+            case STATE_OS:
+                item.setPrice(itemDTO.getPrice());
+                item.setStateCode("OS");
+                break;
+            // 판매 중지
+            case STATE_NOS:
+                item.setPrice(0.0);
+                item.setStateCode("NOS");
+                break;
+            // 거래 체결
+            case TRADE:
+                // 거래 완료 기록
+                insertHistoryBuilder.sellerNum(item.getMember().getMemberNum()).buyerNum(itemDTO.getBuyerNum())
+                        .stateCode("TR").price(item.getPrice()).transactionHash(itemDTO.getTransactionHash());
 
-		insertContractBuilder.sellerNum(item.getMember().getMemberNum()).stateCode(item.getStateCode());
-		contractController.insert(insertContractBuilder.build());
+                // 소유자 변경 및 판매 중지 상태로 변경
+                item.setMember(memberRepo.getById(itemDTO.getBuyerNum()));
+                item.setPrice(0.0);
+                item.setStateCode("NOS");
 
-		// 수정사항 DB에 저장
-		Item newItem = itemRepo.save(item);
+                insertHistoryBuilder = InsertHistoryDTO.builder();
+                insertHistoryBuilder.itemNum(item.getItemNum());
+                break;
+            // 판매 중단
+            case STOP:
+                item.setPrice(0.0);
+                item.setStateCode("ST");
+                break;
+        }
 
-		// printDTO 형식으로 반환
-		return new ResponseEntity<>(toPrintDTO(newItem), HttpStatus.OK);
-	}
+        insertHistoryBuilder.sellerNum(item.getMember().getMemberNum()).price(item.getPrice())
+                .transactionHash(itemDTO.getTransactionHash()).stateCode(item.getStateCode());
+        historyController.insert(insertHistoryBuilder.build());
 
-	// 단일 PrintItemDTO 생성 함수
-	private PrintItemDTO toPrintDTO(Item item) {
+        // 수정사항 DB에 저장
+        Item newItem = itemRepo.save(item);
 
-		PrintItemDTO printItem = ItemMapper.INSTANCE.toPrintDTO(item);
+        // printDTO 형식으로 반환
+        return new ResponseEntity<>(toPrintDetailDTO(newItem), HttpStatus.OK);
+    }
 
-		printItem.setMemberThumbImgUrl(item.getMember().getThumbProfileImg());
-		printItem.setCatCode(item.getCategory().getCatCode());
+    // 단일 PrintItemDTO 생성 함수
+    private PrintItemDTO toPrintDTO(Item item) {
 
-		return printItem;
-	}
+        PrintItemDTO printItem = ItemMapper.INSTANCE.toPrintDTO(item);
 
-	// PrintItemDTO 리스트 생성 함수
-	private List<PrintItemDTO> toPrintDTO(List<Item> items) {
-		List<PrintItemDTO> printItems = new ArrayList<>();
+        printItem.setMemberThumbImgUrl(item.getMember().getThumbProfileImg());
+        printItem.setCatCode(item.getCategory().getCatCode());
 
-		for (Item item : items) {
-			printItems.add(toPrintDTO(item));
-		}
+        return printItem;
+    }
 
-		return printItems;
-	}
+    // PrintItemDTO 리스트 생성 함수
+    private List<PrintItemDTO> toPrintDTO(List<Item> items) {
+        List<PrintItemDTO> printItems = new ArrayList<>();
 
-	// 단일 PrintDetailItemDTO 생성 함수
-	private PrintDetailItemDTO toPrintDetailDTO(Item item) {
+        for (Item item : items) {
+            printItems.add(toPrintDTO(item));
+        }
 
-		PrintDetailItemDTO printItem = ItemMapper.INSTANCE.toPrintDetailDTO(item);
+        return printItems;
+    }
 
-		printItem.setMemberNum(item.getMember().getMemberNum());
-		printItem.setMemberNickName(item.getMember().getNickname());
-		printItem.setMemberThumbImgUrl(item.getMember().getThumbProfileImg());
-		printItem.setCatCode(item.getCategory().getCatCode());
+    // 단일 PrintDetailItemDTO 생성 함수
+    private PrintDetailItemDTO toPrintDetailDTO(Item item) {
 
-		return printItem;
-	}
+        PrintDetailItemDTO printItem = ItemMapper.INSTANCE.toPrintDetailDTO(item);
+
+        printItem.setMemberNum(item.getMember().getMemberNum());
+        printItem.setMemberNickName(item.getMember().getNickname());
+        printItem.setMemberThumbImgUrl(item.getMember().getThumbProfileImg());
+        printItem.setCatCode(item.getCategory().getCatCode());
+
+        return printItem;
+    }
 }

@@ -13,26 +13,28 @@ import lombok.Setter;
 @Builder
 public class PrintDetailItemDTO {
 
-	private int itemNum;
+    private int itemNum;
 
-	private int memberNum;
+    private int memberNum;
 
-	private String memberNickName;
+    private String memberNickName;
 
-	private String memberThumbImgUrl;
+    private String memberThumbImgUrl;
 
-	private String catCode;
+    private String catCode;
 
-	private String title;
+    private String title;
 
-	private String description;
+    private String description;
 
-	private String imgUrl;
+    private String imgUrl;
 
-	private String nftAddress;
+    private int tokenId;
 
-	private String stateCode;
+    private String tokenUri;
 
-	private double price;
+    private String stateCode;
+
+    private double price;
 
 }
