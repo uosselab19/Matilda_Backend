@@ -29,7 +29,7 @@ public class PrintDetailItemDTO {
 
     private String imgUrl;
 
-    private int tokenId;
+    private Integer tokenId;
 
     private String tokenUri;
 
