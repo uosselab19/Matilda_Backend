@@ -2,6 +2,11 @@ stages:
   - deploy
   - run
 
+cache:
+  key: target_folder
+  paths:
+    - ./target
+
 deploy:
   tags:
     - main
