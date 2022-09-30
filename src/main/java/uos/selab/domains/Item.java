@@ -62,7 +62,7 @@ public class Item {
     private String objectUrl;
 
     @Column(name = "token_id", nullable = true, unique = true)
-    private int tokenId;
+    private Integer tokenId;
 
     @Column(name = "token_uri", nullable = true, length = 200)
     private String tokenUri;
