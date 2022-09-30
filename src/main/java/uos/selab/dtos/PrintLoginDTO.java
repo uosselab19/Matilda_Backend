@@ -12,11 +12,11 @@ import lombok.Setter;
 @Getter
 @Builder
 public class PrintLoginDTO {
-	
-	private int id;
-	
-	private String accessToken;
-	
-	private String refreshToken;
-	
+
+    private int id;
+
+    private String accessToken;
+
+    private String refreshToken;
+
 }

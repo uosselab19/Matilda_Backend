@@ -13,20 +13,20 @@ import lombok.Setter;
 @Builder
 public class PrintItemDTO {
 
-	private int itemNum;
+    private int itemNum;
 
-	private String memberThumbImgUrl;
+    private String memberThumbImgUrl;
 
-	private String catCode;
+    private String catCode;
 
-	private String title;
+    private String title;
 
-	private String objectUrl;
+    private String imgUrl;
 
-	private String imgUrl;
+    private String tokenUri;
 
-	private String stateCode;
+    private String stateCode;
 
-	private double price;
+    private double price;
 
 }

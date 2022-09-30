@@ -15,17 +15,17 @@ import uos.selab.dtos.UpdateItemDTO;
 @Mapper(componentModel = "spring")
 public interface ItemMapper {
 
-	ItemMapper INSTANCE = Mappers.getMapper(ItemMapper.class);
+    ItemMapper INSTANCE = Mappers.getMapper(ItemMapper.class);
 
-	Item toEntity(InsertItemDTO itemDTO);
+    Item toEntity(InsertItemDTO itemDTO);
 
-	InsertItemDTO toDTO(Item item);
+    InsertItemDTO toDTO(Item item);
 
-	PrintItemDTO toPrintDTO(Item item);
+    PrintItemDTO toPrintDTO(Item item);
 
-	PrintDetailItemDTO toPrintDetailDTO(Item item);
+    PrintDetailItemDTO toPrintDetailDTO(Item item);
 
-	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-	void updateFromDto(UpdateItemDTO dto, @MappingTarget Item entity);
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateFromDto(UpdateItemDTO dto, @MappingTarget Item entity);
 
 }

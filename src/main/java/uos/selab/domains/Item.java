@@ -27,47 +27,50 @@ import lombok.Setter;
 @Getter
 @Builder
 public class Item {
-	@Id
-	@Column(name = "item_num")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int itemNum;
+    @Id
+    @Column(name = "item_num")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int itemNum;
 
-	/* Foreign Key */
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_num", nullable = false)
-	@JsonIgnore
-	private Member member;
+    /* Foreign Key */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_num", nullable = false)
+    @JsonIgnore
+    private Member member;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "cat_code", nullable = false)
-	@JsonIgnore
-	private Category category;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cat_code", nullable = false)
+    @JsonIgnore
+    private Category category;
 
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "item_num", nullable = false, insertable = false, updatable = false)
-	@JsonIgnore
-	private List<Contract> contracts;
-	/* */
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_num", nullable = false, insertable = false, updatable = false)
+    @JsonIgnore
+    private List<History> histories;
+    /* */
 
-	@Column(nullable = false, length = 45)
-	private String title;
+    @Column(nullable = false, length = 45)
+    private String title;
 
-	@Column(nullable = true, length = 300)
-	private String description;
+    @Column(nullable = true, length = 300)
+    private String description;
 
-	@Column(name = "img_url", nullable = false, length = 255)
-	private String imgUrl;
+    @Column(name = "img_url", nullable = false, length = 255)
+    private String imgUrl;
 
-	@Column(name = "object_url", nullable = false, length = 255)
-	private String objectUrl;
+    @Column(name = "object_url", nullable = false, length = 255)
+    private String objectUrl;
 
-	@Column(name = "nft_address", nullable = true, unique = true, length = 500)
-	private String nftAddress;
+    @Column(name = "token_id", nullable = true, unique = true)
+    private int tokenId;
 
-	@Column(name = "state_code", nullable = false, length = 3)
-	private String stateCode;
+    @Column(name = "token_uri", nullable = true, length = 200)
+    private String tokenUri;
 
-	@Column(nullable = true)
-	private Double price;
+    @Column(name = "state_code", nullable = false, length = 3)
+    private String stateCode;
+
+    @Column(nullable = true)
+    private Double price;
 
 }

@@ -11,22 +11,20 @@ import lombok.Setter;
 @Setter
 @Getter
 @Builder
-public class InsertContractDTO {
+public class InsertHistoryDTO {
 
-	// private int contractNum;
+    /* Foreign Key */
+    private int itemNum;
 
-	/* Foreign Key */
-	private int itemNum;
+    private int sellerNum;
 
-	private int sellerNum;
+    private int buyerNum;
+    /* */
 
-	private int buyerNum;
-	/* */
+    private String stateCode;
 
-	private String stateCode;
+    private String transactionHash;
 
-	private Double price;
-
-	// private Date createdAt;
+    private Double price;
 
 }

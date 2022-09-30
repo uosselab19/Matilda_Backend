@@ -16,11 +16,18 @@ import uos.selab.enums.UpdateItemOption;
 @Builder
 public class UpdateDetailItemDTO {
 
-	private int buyerNum;
-	
-	@Size(max = 500, message = "nftAddress의 최대 크기는 500입니다.")
-	private String nftAddress;
-	
-	private UpdateItemOption option;
-	
+    private int buyerNum;
+
+    private int tokenId;
+
+    @Size(max = 200, message = "tokenUri의 최대 크기는 200입니다.")
+    private String tokenUri;
+
+    private Double price;
+
+    @Size(max = 100, message = "transactionHash의 최대 크기는 100입니다.")
+    private String transactionHash;
+
+    private UpdateItemOption option;
+
 }
