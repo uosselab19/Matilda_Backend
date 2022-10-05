@@ -28,7 +28,8 @@ class ItemRepositoryImpl implements ItemRepositoryCustom {
 
         // where 검색 조건 설정
         BooleanBuilder builder = new BooleanBuilder();
-        String title = itemDTO.getTitle(), catCode = itemDTO.getCatCode(), stateCode = itemDTO.getStateCode();
+        String title = itemDTO.getTitle(), catCode = itemDTO.getCatCode();
+        List<String> stateCodes = itemDTO.getStateCodes();
         int memberNum = itemDTO.getMemberNum();
         Double minPrice = itemDTO.getMinPrice(), maxPrice = itemDTO.getMaxPrice();
 
@@ -46,9 +47,12 @@ class ItemRepositoryImpl implements ItemRepositoryCustom {
 
         if (!StringUtils.isNullOrEmpty(catCode))
             builder.and(item.category.catCode.eq(catCode));
-
-        if (!StringUtils.isNullOrEmpty(stateCode))
-            builder.and(item.stateCode.eq(stateCode));
+        
+        if (stateCodes != null) {
+            for (String stateCode : stateCodes) {
+                builder.or(item.stateCode.eq(stateCode));
+            }
+        }
 
         queryBuilder.where(builder);
 
