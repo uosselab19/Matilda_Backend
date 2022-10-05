@@ -49,9 +49,11 @@ class ItemRepositoryImpl implements ItemRepositoryCustom {
             builder.and(item.category.catCode.eq(catCode));
         
         if (stateCodes != null) {
+            BooleanBuilder stateCodeBuilder = new BooleanBuilder();
             for (String stateCode : stateCodes) {
-                builder.or(item.stateCode.eq(stateCode));
+                stateCodeBuilder.or(item.stateCode.eq(stateCode));
             }
+            builder.and(stateCodeBuilder);
         }
 
         queryBuilder.where(builder);
