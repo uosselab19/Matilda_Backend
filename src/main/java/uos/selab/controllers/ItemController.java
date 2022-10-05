@@ -170,7 +170,6 @@ public class ItemController {
 
         // history 작성 준비
         InsertHistoryDTOBuilder insertHistoryBuilder = InsertHistoryDTO.builder();
-        insertHistoryBuilder.itemNum(item.getItemNum());
 
         // option별 명령 수행
         switch (itemDTO.getOption()) {
@@ -179,44 +178,62 @@ public class ItemController {
                 if (itemRepo.findByTokenId(itemDTO.getTokenId()).isPresent()) {
                     throw new DuplicateKeyException("Duplicated Token ID");
                 }
+
+                // 발행 완료 기록
+                insertHistoryBuilder.itemNum(item.getItemNum()).sellerNum(item.getMember().getMemberNum())
+                        .stateCode("MT").transactionHash(itemDTO.getTransactionHash());
+                historyController.insert(insertHistoryBuilder.build());
+
                 item.setTokenId(itemDTO.getTokenId());
                 item.setTokenUri(itemDTO.getTokenUri());
                 item.setStateCode("NOS");
                 break;
+
             // 판매 등록
             case STATE_OS:
                 item.setPrice(itemDTO.getPrice());
                 item.setStateCode("OS");
+
+                insertHistoryBuilder.itemNum(item.getItemNum()).sellerNum(item.getMember().getMemberNum())
+                        .price(item.getPrice())
+                        .transactionHash(itemDTO.getTransactionHash()).stateCode("OS");
+                historyController.insert(insertHistoryBuilder.build());
                 break;
+
             // 판매 중지
             case STATE_NOS:
-                item.setPrice(0.0);
+                item.setPrice(null);
                 item.setStateCode("NOS");
+
+                insertHistoryBuilder.itemNum(item.getItemNum()).sellerNum(item.getMember().getMemberNum())
+                        .stateCode("NOS").transactionHash(itemDTO.getTransactionHash());
+                historyController.insert(insertHistoryBuilder.build());
                 break;
+
             // 거래 체결
             case TRADE:
                 // 거래 완료 기록
-                insertHistoryBuilder.sellerNum(item.getMember().getMemberNum()).buyerNum(itemDTO.getBuyerNum())
+                insertHistoryBuilder.itemNum(item.getItemNum()).sellerNum(item.getMember().getMemberNum())
+                        .buyerNum(itemDTO.getBuyerNum())
                         .stateCode("TR").price(item.getPrice()).transactionHash(itemDTO.getTransactionHash());
+                historyController.insert(insertHistoryBuilder.build());
 
                 // 소유자 변경 및 판매 중지 상태로 변경
                 item.setMember(memberRepo.getById(itemDTO.getBuyerNum()));
-                item.setPrice(0.0);
+                item.setPrice(null);
                 item.setStateCode("NOS");
-
-                insertHistoryBuilder = InsertHistoryDTO.builder();
-                insertHistoryBuilder.itemNum(item.getItemNum());
                 break;
+
             // 판매 중단
             case STOP:
-                item.setPrice(0.0);
+                item.setPrice(null);
                 item.setStateCode("ST");
+
+                insertHistoryBuilder.itemNum(item.getItemNum()).sellerNum(item.getMember().getMemberNum())
+                        .transactionHash(itemDTO.getTransactionHash()).stateCode("ST");
+                historyController.insert(insertHistoryBuilder.build());
                 break;
         }
-
-        insertHistoryBuilder.sellerNum(item.getMember().getMemberNum()).price(item.getPrice())
-                .transactionHash(itemDTO.getTransactionHash()).stateCode(item.getStateCode());
-        historyController.insert(insertHistoryBuilder.build());
 
         // 수정사항 DB에 저장
         Item newItem = itemRepo.save(item);
