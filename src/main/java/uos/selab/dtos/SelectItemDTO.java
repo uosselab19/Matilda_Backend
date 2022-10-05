@@ -1,5 +1,7 @@
 package uos.selab.dtos;
 
+import java.util.List;
+
 import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
@@ -29,8 +31,7 @@ public class SelectItemDTO {
 	@Size(min = 2, max = 3, message = "catCode의 크기는 2에서 3 사이입니다.")
 	private String catCode; // 키 값 4
 
-	@Size(min = 2, max = 3, message = "stateCode의 크기는 2에서 3 사이입니다.")
-	private String stateCode; // 키 값 5
+	private List<String> stateCodes; // 키 값 5
 
 	private SortOrder sortOrder; // 정렬순서
 
