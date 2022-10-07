@@ -56,7 +56,7 @@ public class SecurityController {
         }
 
         // refresh token 발급 및 저장
-        member.setRefreshToken(jwtTokenProvider.createRefreshToken());
+        member.setRefreshToken(jwtTokenProvider.createRefreshToken(member.getMemberNum()));
         member = memberRepo.save(member);
 
         // access token 발급 및 반환
@@ -81,22 +81,23 @@ public class SecurityController {
             @ApiImplicitParam(name = "REFRESH-TOKEN", value = "refresh-token", required = true, dataType = "String", paramType = "header") })
     @Transactional()
     public ResponseEntity<PrintLoginDTO> refreshToken(@RequestHeader(value = "X-AUTH-TOKEN") String accessToken,
-            @RequestHeader(value = "REFRESH-TOKEN") String refreshToken, @RequestBody String ignore) {
+            @RequestHeader(value = "REFRESH-TOKEN") String refreshToken, @RequestBody Map<String, Boolean> ignore) {
 
         // accessToken이 만료되지 않았거나 문제가 있는 token이라면 예외 발생
         if (!jwtTokenProvider.validateTokenExceptExpiration(accessToken))
             // accessToken이 만료되지 않은 정상 토큰이라면 해당 내용을 알림
             if (jwtTokenProvider.validateAccessToken(accessToken)) {
                 // ignore의 값이 yes라면 accessToken의 만료 여부를 무시하고 재발급
-                if (ignore.equals("yes"))
+                if (ignore.get("ignore"))
                     ;
-                throw new AccessDeniedException("The accessToken has not yet expired");
+                else
+                    throw new AccessDeniedException("The accessToken has not yet expired");
             }
             // accessToken에 문제가 있는 경우라면 해당 내용을 알림
             else
                 throw new ForbiddenException("The accessToken is not valid");
 
-        Claims claims = jwtTokenProvider.getClaims(accessToken);
+        Claims claims = jwtTokenProvider.getClaims(refreshToken);
         int num = Integer.parseInt(claims.get("num").toString());
 
         Member member = memberRepo.findById(num)
@@ -114,6 +115,7 @@ public class SecurityController {
 
         List<String> roles = new ArrayList<>();
         roles.add("ROLE_MEMBER");
+        printLogin.setId(member.getMemberNum());
         printLogin.setAccessToken(jwtTokenProvider.createAccessToken(member, roles));
         printLogin.setRefreshToken(member.getRefreshToken());
 
@@ -146,24 +148,20 @@ public class SecurityController {
     @ApiOperation(value = "토큰 유효성 검사", protocols = "http")
     @Transactional()
     public ResponseEntity<String> validCheck(@RequestHeader(value = "X-AUTH-TOKEN") String accessToken) {
-        System.out.println("1");
+
         // accessToken이 만료되지 않았거나 문제가 있는 token이라면 예외 발생
         if (!jwtTokenProvider.validateTokenExceptExpiration(accessToken)) {
-            System.out.println("2");
             // accessToken이 만료되지 않은 정상 토큰이라면 해당 내용을 알림
             if (jwtTokenProvider.validateAccessToken(accessToken)) {
-                System.out.println("3");
                 return new ResponseEntity<>("valid token", HttpStatus.OK);
             }
             // accessToken에 문제가 있는 경우라면 해당 내용을 알림
             else {
-                System.out.println("4");
                 throw new ForbiddenException("The accessToken is not valid");
             }
         }
         // accessToken이 만료되었고, 그 외에는 문제가 없는 경우 해당 내용을 알림
         else {
-            System.out.println("5");
             throw new AccessDeniedException("The accessToken has expired");
         }
     }
