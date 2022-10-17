@@ -36,8 +36,7 @@ import uos.selab.exceptions.ResourceNotFoundException;
 import uos.selab.mappers.MemberMapper;
 import uos.selab.repositories.MemberRepository;
 
-@CrossOrigin(origins = { "http://localhost:3000", "http://3.133.233.81:3000", "https://localhost:3000",
-        "http://172.16.163.170:3000", "https://172.16.163.170:3000" })
+@CrossOrigin(origins = { "http://localhost:3000", "http://3.133.233.81:3000", "http://www.matilda-hanium.click:3000" })
 @RequiredArgsConstructor
 @RestController()
 @RequestMapping("/members")

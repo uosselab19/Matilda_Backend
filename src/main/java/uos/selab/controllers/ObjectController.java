@@ -15,8 +15,8 @@ import uos.selab.domains.Item;
 import uos.selab.exceptions.ResourceNotFoundException;
 import uos.selab.repositories.ItemRepository;
 
-@CrossOrigin(origins = { "http://localhost:8000", "http://3.133.233.81:8000", "http://localhost:8100",
-        "http://3.133.233.81:8100" })
+@CrossOrigin(origins = { "http://localhost:8000", "http://3.133.233.81:8000", "http://www.matilda-hanium.click:8000",
+        "http://localhost:8100", "http://3.133.233.81:8100", "http://www.matilda-hanium.click:8100" })
 @RequiredArgsConstructor
 @RestController()
 @RequestMapping("/objects")

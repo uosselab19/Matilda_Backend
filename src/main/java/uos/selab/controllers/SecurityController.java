@@ -29,7 +29,7 @@ import uos.selab.exceptions.ResourceNotFoundException;
 import uos.selab.repositories.MemberRepository;
 import uos.selab.utils.JwtTokenProvider;
 
-@CrossOrigin(origins = { "http://localhost:3000", "http://3.133.233.81:3000" })
+@CrossOrigin(origins = { "http://localhost:3000", "http://3.133.233.81:3000", "http://www.matilda-hanium.click:3000" })
 @RequiredArgsConstructor
 @RestController()
 @RequestMapping("/security")
