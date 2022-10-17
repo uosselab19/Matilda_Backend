@@ -43,8 +43,9 @@ import uos.selab.repositories.CategoryRepository;
 import uos.selab.repositories.ItemRepository;
 import uos.selab.repositories.MemberRepository;
 
-@CrossOrigin(origins = { "http://localhost:3000", "http://3.133.233.81:3000", "http://localhost:8000",
-        "http://3.133.233.81:8000", "http://3.133.233.81:8100" })
+@CrossOrigin(origins = { "http://localhost:3000", "http://3.133.233.81:3000", "http://www.matilda-hanium.click:3000",
+        "http://localhost:8000", "http://3.133.233.81:8000", "http://www.matilda-hanium.click:8000",
+        "http://localhost:8100", "http://3.133.233.81:8100", "http://www.matilda-hanium.click:8100" })
 @RequiredArgsConstructor
 @RestController()
 @RequestMapping("/items")
