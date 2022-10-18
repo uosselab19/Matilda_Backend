@@ -78,7 +78,7 @@ public class Member {
     @Column(name = "wallet_address", nullable = true, length = 100)
     private String walletAddress;
 
-    @Column(name = "wallet_private_key", nullable = true, length = 100)
+    @Column(name = "wallet_private_key", nullable = true, length = 200)
     private String walletPrivateKey;
 
     @Column(name = "refresh_token", nullable = true, length = 300)
